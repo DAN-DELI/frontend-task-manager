@@ -691,7 +691,7 @@ formUser.addEventListener("submit", async (e) => {
     const userData = {
         name: userNameInput.value.trim(),
         email: userEmailInput.value.trim(),
-        document: Number(userDocInput.value.trim()),
+        document: userDocInput.value.trim(),
         role: userRoleInput.value
     };
 
