@@ -42,7 +42,8 @@ export function renderTasks(container, tasks, currentUser, messagesFilters) {
             <span class="message-card__timestamp">${task.createdAt}</span>
             <div class="task-btns">
                 <button class="btn-edit">Editar</button>
-                <button class="btn-delete">Eliminar</button>
+                <button class="btn-delete" ${task.created_by === 'admin' ? 'disabled style="opacity:0.4; cursor:not-allowed;"' : ''}>
+                Eliminar</button>
             </div>
         </div>
         <div class="message-card__content">
@@ -52,6 +53,7 @@ export function renderTasks(container, tasks, currentUser, messagesFilters) {
         `;
 
         card.querySelector('.btn-delete').onclick = async () => {
+            if (task.created_by === 'admin') return;
             if (confirm("¿Eliminar esta tarea?")) {
                 await deleteTaskApi(task.id);
                 card.remove();
@@ -93,7 +95,7 @@ function makeEditable(card, task, currentUser) {
             
             <select class="form__input sm">
                 <option value="pendiente" ${task.status === 'pendiente' ? 'selected' : ''}>Pendiente</option>
-                <option value="en-progreso" ${task.status === 'en-progreso' ? 'selected' : ''}>En progreso</option>
+                <option value="en-progreso" ${task.status === 'en-progreso' ? 'selected' : ''}>En-progreso</option>
                 <option value="completada" ${task.status === 'completada' ? 'selected' : ''}>Completada</option>
             </select>
             

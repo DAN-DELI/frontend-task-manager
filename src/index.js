@@ -14,19 +14,20 @@ const documentoInput = document.getElementById("documento");
  * - Llama a `validateUserService` para obtener datos del usuario
  * - Si existe, carga las tareas del usuario y renderiza la UI
  */
-validateBtn.addEventListener("click", async () => {
-    const document = documentoInput.value.trim();
+validateBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const docValue = documentoInput.value.trim();
 
     documentoInput.value = "";
     documentoInput.blur();
 
-    if (!document || isNaN(document)) {
-        showNotification("ID inválido. Por favor, ingresa un número.", "warning");
+    if (!docValue || isNaN(docValue)) {
+        showNotification("Documento inválido. Por favor, ingresa un número.", "warning");
         return;
     }
 
     try {
-        let currentUser = await validateUserService(document);
+        let currentUser = await validateUserService(docValue);
 
         if (currentUser == null) {
             showNotification("Usuario no registrado.", "error");
@@ -37,18 +38,17 @@ validateBtn.addEventListener("click", async () => {
         localStorage.setItem('usuarioActivo', JSON.stringify(currentUser));
 
         // se envia al archivo correspondiente al rol
-        if (currentUser.role == "user") {
-            window.location.href = "user.html";
-            return
-        } else if (currentUser.role == "admin") {
+        if (currentUser.role === "admin") {
             window.location.href = "admin.html";
-            return
+        } else {
+            window.location.href = "user.html";
         }
 
 
     } catch (error) {
-        showNotification("Usuario no encontrado en la base de datos.", "error");
-        console.log("Se ha presentado un error: " + error)
+        // Captura el mensaje real enviado por el backend (vía response.handler)
+        showNotification(error.message || "Error de conexión con el servidor", "error");
+        console.error("Se ha presentado un error en el login: ", error);
     }
 });
 
@@ -63,6 +63,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // focalizamos en el input
-    documentoInput.focus();
+    if (documentoInput) {
+        documentoInput.focus();
+    }
 })
 

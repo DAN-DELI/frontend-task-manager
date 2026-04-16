@@ -14,11 +14,9 @@ import { getSelectedValues, isValidInput, processTasks } from "../utils/helpers.
  */
 export async function getTasksByUser(userId) {
     const tasks = await fetchTasks();
-
-    let userTasks = tasks.filter(t => t.userId === userId);
-    return userTasks
+    
+    return tasks.filter(t => Number(t.user_id) === Number(userId));
 }
-
 /**
  * Persiste una tarea nueva usando la API.
  * @param {Object} task - Objeto tarea a guardar
@@ -55,10 +53,18 @@ export function sortTasks(tasks, criterio) {
 
     switch (criterio) {
         case "fecha_desc":
-            return copy.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            return copy.sort((a, b) => {
+                const dateB = new Date(b.created_at || b.createdAt);
+                const dateA = new Date(a.created_at || a.createdAt);
+                return dateB - dateA;
+            });
 
         case "fecha_asc":
-            return copy.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+            return copy.sort((a, b) => {
+                const dateA = new Date(a.created_at || a.createdAt);
+                const dateB = new Date(b.created_at || b.createdAt);
+                return dateA - dateB;
+            });
 
         case "nombre_asc":
             return copy.sort((a, b) => a.title.localeCompare(b.title));
@@ -78,7 +84,6 @@ export function sortTasks(tasks, criterio) {
             return copy;
     }
 }
-
 /**
  * Valida todos los campos del formulario
  * @returns {boolean} - true si todos los campos son válidos, false si alguno no lo es
@@ -88,16 +93,16 @@ export function validateForm(taskTitle, taskDescription, taskStatus, taskTitleEr
 
     if (!isValidInput(taskTitle.value)) {
         showError(taskTitleError, 'El título no puede estar vacío.');
-        showEmpty(taskTitleError)
+        showEmpty(taskTitleError);
         isValid = false;
     } else {
         clearError(taskTitleError);
-        hideEmpty(taskTitleError)
+        hideEmpty(taskTitleError);
     }
 
     if (!isValidInput(taskDescription.value)) {
         showError(taskDescriptionError, 'La descripción no puede estar vacía.');
-        showEmpty(taskDescriptionError)
+        showEmpty(taskDescriptionError);
         isValid = false;
     } else {
         clearError(taskDescriptionError);
@@ -106,7 +111,7 @@ export function validateForm(taskTitle, taskDescription, taskStatus, taskTitleEr
 
     if (!isValidInput(taskStatus.value)) {
         showError(taskStatusError, 'Debes seleccionar un estado.');
-        showEmpty(taskStatusError)
+        showEmpty(taskStatusError);
         isValid = false;
     } else {
         clearError(taskStatusError);
@@ -129,6 +134,7 @@ export function validateForm(taskTitle, taskDescription, taskStatus, taskTitleEr
  * @returns {Promise<Array>} Lista de tareas resultado del filtrado/orden
  */
 export async function orderFilter(filterStatus, sortTasksArea, container, currentUser) {
+    // Llama a la función local que ya maneja los campos SQL
     let tasks = await getTasksByUser(currentUser.id);
 
     const estados = getSelectedValues(filterStatus);
@@ -136,15 +142,13 @@ export async function orderFilter(filterStatus, sortTasksArea, container, curren
 
     const result = processTasks(tasks, estados, sort, filterTasks, sortTasks);
 
-    let currentFilteredTasks = result;
-
     const messagesFilters = document.getElementById("messagesFilters");
 
     result.length === 0 ? filterVoid(container) : renderTasks(container, result, currentUser, messagesFilters);
 
     updateMessageCounter(result.length);
 
-    return currentFilteredTasks;
+    return result;
 }
 
 // analiza las tareas del usuario, al igual que las filtras y maneja la UI a base de estas

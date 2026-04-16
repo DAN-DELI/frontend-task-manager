@@ -173,3 +173,7 @@
 #modalConfirm {
     z-index: 2000;
 }
+
+#confirmMessage {
+    white-space: pre-line;
+}

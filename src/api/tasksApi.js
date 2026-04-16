@@ -11,8 +11,12 @@
  */
 export async function fetchTasks() {
     const res = await fetch(`http://localhost:3000/tasks`);
-    if (!res.ok) throw new Error("Error cargando tareas");
-    return res.json();
+    const response = await res.json(); // Estructura: { success, message, data, errors }
+
+    if (!response.success) {
+        throw new Error(response.message || "Error al obtener tareas");
+    }
+    return response.data; // Retornamos solo el array de tareas
 }
 
 /**
@@ -27,9 +31,15 @@ export async function createTask(task) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(task)
     });
+    
+    const response = await res.json();
 
-    if (!res.ok) throw new Error("Error al registrar tarea");
-    return res.json();
+    if (!response.success) {
+        const errorMsg = response.errors ? response.errors.join(", ") : response.message;
+        throw new Error(errorMsg || "Error al registrar tarea");
+    }
+
+    return response; 
 }
 
 /**
@@ -41,12 +51,17 @@ export async function createTask(task) {
  */
 export async function updateTaskApi(id, updatedData) {
     const res = await fetch(`http://localhost:3000/tasks/${id}`, {
-        method: "PATCH", // Solo enviamos lo que cambió
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedData)
     });
-    if (!res.ok) throw new Error("No se pudo actualizar la tarea");
-    return res.json();
+    
+    const response = await res.json();
+
+    if (!response.success) {
+        throw new Error(response.message || "No se pudo actualizar la tarea");
+    }
+    return response.data; 
 }
 
 /**
@@ -59,6 +74,12 @@ export async function deleteTaskApi(id) {
     const res = await fetch(`http://localhost:3000/tasks/${id}`, {
         method: "DELETE"
     });
-    if (!res.ok) throw new Error("No se pudo eliminar la tarea");
-    return true;
+    
+    const response = await res.json();
+
+    if (!response.success) {
+        throw new Error(response.message || "No se pudo eliminar la tarea");
+    }
+    
+    return response;
 }

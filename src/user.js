@@ -78,25 +78,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         nameDisplay.textContent = currentUser.name;
         emailDisplay.textContent = currentUser.email;
-        userRolDisplay.textContent = "Usuario";
+        userRolDisplay.textContent = currentUser.role; 
 
-        // Traemos las tareas del usuario
-        tasksUser = await getTasksByUser(currentUser.id, container, messagesFilters);
+        // Traemos las tareas (getTasksByUser ya debe estar adaptado internamente)
+        tasksUser = await getTasksByUser(currentUser.id);
 
         if (tasksUser.length == 0) {
-            hideEmpty(messagesFilters)
-            tasksNull(container)
+            hideEmpty(messagesFilters);
+            tasksNull(container);
         } else {
             renderTasks(container, tasksUser, currentUser, messagesFilters);
         }
 
         updateMessageCounter(tasksUser.length);
-
-        resetFiltersUI(filterStatus, sortTasksArea)
+        resetFiltersUI(filterStatus, sortTasksArea);
 
     } catch (error) {
-        showNotification("Usuario no encontrado en la base de datos.", "error");
-        console.log("Se ha presentado un error: " + error)
+        showNotification("Error al cargar datos.", "error");
     }
 });
 
@@ -121,11 +119,11 @@ taskForm.addEventListener("submit", async e => {
     }
 
     const task = {
-        userId: currentUser.id,
+        user_id: currentUser.id, 
         title: taskTitleArea.value.trim(),
         description: taskDescriptionArea.value.trim(),
         status: taskStatusArea.value,
-        createdAt: getCurrentTimestamp()
+        created_by: "user"
     };
 
     //persiste la tarea en el backend

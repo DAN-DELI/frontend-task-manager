@@ -47,11 +47,6 @@ export function getInitials(name) {
 
 /**
  * Obtiene valores de checkboxes seleccionados
- * @param {NodeList} checkboxes 
- * @returns {Array}
- */
-/**
- * Obtiene valores de checkboxes seleccionados
  * @param {NodeList} checkboxes - NodeList obtenido por querySelectorAll
  * @returns {Array<string>} Valores de checkboxes marcados
  */
