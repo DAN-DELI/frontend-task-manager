@@ -142,7 +142,7 @@
 
             <!-- FORMULARIO DE REGISTRO DE TAREAS -->
             <div id="task-section" class="modal-overlay hidden">
-                <div class="card modal-content">
+                <div id="task-table" class="card modal-content">
 
                     <div class="card form-card no-padding" style="border: none; box-shadow: none;">
                         <h2 class="card__title">Registrar Nueva Tarea</h2>
@@ -151,17 +151,18 @@
                             <!-- Título de la tarea -->
                             <div class="form__group">
                                 <label for="taskTitle" class="form__label">Título de la tarea</label>
-                                <input type="text" id="taskTitleArea" class="form__input"
-                                    placeholder="Ingresa el titulo..." aria-required="true">
+                                <input type="text" id="taskTitleArea" class="form__input taskTitleArea"
+                                    placeholder="Ingresa el titulo..." aria-required="true" maxlength="150">
                                 <span class="form__error hidden" id="taskTitleError"></span>
                             </div>
 
                             <!-- Descripción de la tarea -->
                             <div class="form__group">
                                 <label for="taskDescription" class="form__label">Descripción</label>
-                                <textarea id="taskDescriptionArea" class="form__input form__textarea"
-                                    placeholder="Describe la tarea en detalle..." rows="4"
-                                    aria-required="true"></textarea>
+                                <textarea id="taskDescriptionArea"
+                                    class="form__input form__textarea taskDescriptionArea"
+                                    placeholder="Describe la tarea en detalle..." rows="4" aria-required="true"
+                                    maxlength="2000"></textarea>
                                 <span class="form__error hidden" id="taskDescriptionError"></span>
                             </div>
 
@@ -177,13 +178,12 @@
                                         <span>Seleccionar todos</span>
                                     </label>
 
-                                    <div id="individualUsersList">
+                                    <div id="individualUsersList" class="taskUsersArea">
                                         <p style="font-size: 0.9rem; color: #666; font-style: italic;">Cargando lista de
                                             usuarios...</p>
                                     </div>
                                 </div>
-                                <span class="form__error hidden" id="userSelectionError">Debes seleccionar al menos un
-                                    usuario</span>
+                                <span class="form__error hidden" id="userSelectionError"></span>
                             </div>
 
                             <!-- Estado de la tarea -->
