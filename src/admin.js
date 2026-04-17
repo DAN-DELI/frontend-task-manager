@@ -16,7 +16,6 @@ import { fetchTasks, deleteTaskApi, updateTaskApi, createTask } from "./api/task
 import { fetchUsers, deleteUserApi, updateUserApi, createUserApi } from "./api/usersApi.js";
 
 // Services - Lógica de negocio
-import { validateForm } from "./services/tasksService.js";
 import {
     applyAdminTaskFilters,
     applyAdminUserFilters,
@@ -24,7 +23,8 @@ import {
     removeTaskFromArray,
     updateUserInArray,
     removeUserFromArray,
-    prepareMultipleTasks
+    prepareMultipleTasks,
+    validateAreaForm
 } from "./services/adminService.js";
 
 // UI - Renderizado y manipulación del DOM
@@ -59,6 +59,7 @@ const userRolDisplay = document.getElementById("userRolDisplay");
 const body = document.querySelector("body");
 
 // Formulario de tareas
+const taskTable = document.getElementById("task-table")
 const formCard = document.querySelector(".form-card");
 const taskTitleArea = document.getElementById("taskTitleArea");
 const taskDescriptionArea = document.getElementById("taskDescriptionArea");
@@ -343,14 +344,16 @@ formNewGlobalTask.addEventListener("submit", async (e) => {
 
     const taskId = formCard.dataset.id;
 
+    // Validacion total del formulario
+    if (!validateAreaForm(taskTable, taskId)) {
+        return
+    }
+
     // =================================
     // CASO: EDICIÓN DE TAREA
     // =================================
     if (taskId) {
         showCustomConfirm("Editar tarea", "¿Estas seguro de que deseas editar esta tarea?", async () => {
-            if (!validateForm(taskTitleArea, taskDescriptionArea, taskStatusArea, taskTitleError, taskDescriptionError, taskStatusError)) {
-                return;
-            }
 
             const newTaskUpdate = {
                 title: taskTitleArea.value,
@@ -373,7 +376,7 @@ formNewGlobalTask.addEventListener("submit", async (e) => {
                 formCard.removeAttribute("data-id");
                 hideEmpty(userSelectionError);
             } catch (error) {
-                console.error("Error al actualizar tarea:", error);
+                console.log("[ERROR]", error.message);
                 showNotification("Error al actualizar la tarea", "error");
             }
         });
@@ -383,26 +386,6 @@ formNewGlobalTask.addEventListener("submit", async (e) => {
     // =================================
     // CASO: CREACIÓN DE TAREA MÚLTIPLE
     // =================================
-
-    // Obtener IDs de usuarios seleccionados
-    const selectedIds = Array.from(document.querySelectorAll('.user-assign-check:checked')).map(cb => cb.value);
-
-    let next = true;
-
-    // Validar selección de usuarios
-    if (selectedIds.length === 0) {
-        showEmpty(userSelectionError);
-        next = false;
-    } else {
-        hideEmpty(userSelectionError);
-    }
-
-    // Validar campos del formulario
-    if (!validateForm(taskTitleArea, taskDescriptionArea, taskStatusArea, taskTitleError, taskDescriptionError, taskStatusError)) {
-        next = false;;
-    }
-
-    if (!next) return;
 
     try {
         // Preparar tareas para cada usuario seleccionado
