@@ -200,47 +200,41 @@ export function validateAreaForm(taskTable, withUsers) {
     // --- VALIDACIÓN DE TÍTULO (Zod: min 5, max 150) ---
     const titleValue = titleInput.value.trim();
     if (titleValue.length < 5) {
-        errorTitle.textContent = "El título debe tener al menos 5 caracteres";
-        errorTitle.classList.remove("hidden");
+        showError(errorTitle, "El título debe tener al menos 5 caracteres");
         isValid = false;
     } else if (titleValue.length > 150) {
-        errorTitle.textContent = "El título no puede exceder los 150 caracteres";
-        errorTitle.classList.remove("hidden");
+        showError(errorTitle, "El título no puede exceder los 150 caracteres");
         isValid = false;
     } else {
-        errorTitle.classList.add("hidden");
+        clearError(errorTitle);
     }
 
     // --- VALIDACIÓN DE DESCRIPCIÓN (Zod: min 5, max 2000) ---
     const descValue = descInput.value.trim();
     if (descValue.length < 5) {
-        errorDescription.textContent = "La descripción debe tener al menos 5 caracteres";
-        errorDescription.classList.remove("hidden");
+        showError(errorDescription, "La descripción debe tener al menos 5 caracteres");
         isValid = false;
     } else if (descValue.length > 2000) {
-        errorDescription.textContent = "La descripción no puede exceder los 2000 caracteres";
-        errorDescription.classList.remove("hidden");
+        showError(errorDescription, "La descripción no puede exceder los 2000 caracteres");
         isValid = false;
     } else {
-        errorDescription.classList.add("hidden");
+        clearError(errorDescription);
     }
 
     // --- VALIDACIÓN DE USUARIOS (Al menos uno seleccionado) ---
     if (selectedCheckboxes.length === 0 && withUsers == undefined) {
-        errorUsers.textContent = "Debes seleccionar al menos un usuario";
-        errorUsers.classList.remove("hidden");
+        showError(errorUsers, "Debes seleccionar al menos un usuario");
         isValid = false;
     } else {
-        errorUsers.classList.add("hidden");
+        clearError(errorUsers);
     }
 
     // --- VALIDACIÓN DE ESTADO (Zod: enum) ---
     if (statusSelect.value === "") {
-        errorStatus.textContent = "Debes seleccionar un estado";
-        errorStatus.classList.remove("hidden");
+        showError(errorStatus, "Debes seleccionar un estado");
         isValid = false;
     } else {
-        errorStatus.classList.add("hidden");
+        clearError(errorStatus)
     }
 
     return isValid;
