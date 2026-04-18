@@ -24,7 +24,8 @@ import {
     updateUserInArray,
     removeUserFromArray,
     prepareMultipleTasks,
-    validateAreaForm
+    validateAreaForm,
+    validateUserForm
 } from "./services/adminService.js";
 
 // UI - Renderizado y manipulación del DOM
@@ -87,6 +88,7 @@ const taskSection = document.getElementById("task-section");
 const adminSearchUser = document.getElementById("adminSearchUser");
 
 // Modal de usuario
+const modalAdminUser = document.querySelector("#modalUserForm")
 const btnNewUser = document.getElementById("btnNewUser");
 const modalUserForm = document.getElementById("modalUserForm");
 const btnCancelUser = document.getElementById("btnCancelUser");
@@ -387,6 +389,9 @@ formNewGlobalTask.addEventListener("submit", async (e) => {
     // CASO: CREACIÓN DE TAREA MÚLTIPLE
     // =================================
 
+    // Obtener IDs de usuarios seleccionados
+    const selectedIds = Array.from(document.querySelectorAll('.user-assign-check:checked')).map(cb => cb.value);
+
     try {
         // Preparar tareas para cada usuario seleccionado
         const tasksToCreate = prepareMultipleTasks(
@@ -482,6 +487,18 @@ adminUsersTableBody.addEventListener("click", (e) => {
         const userId = btnEdit.getAttribute("data-id");
         const user = allUsers.find(u => String(u.id) === String(userId));
 
+        // Áreas de error
+        const errorName = document.querySelector("#userNameError");
+        const errorEmail = document.querySelector("#userEmailError");
+        const errorDocument = document.querySelector("#userDocumentError");
+        const errorRole = document.querySelector("#userRoleError");
+
+        // Ocultar todos los errores al inicio
+        errorName.classList.add("hidden");
+        errorEmail.classList.add("hidden");
+        errorDocument.classList.add("hidden");
+        errorRole.classList.add("hidden");
+
         if (user) {
             editUserId.value = user.id;
             userNameInput.value = user.name;
@@ -501,7 +518,19 @@ adminUsersTableBody.addEventListener("click", (e) => {
 /*
     ACCION: MOSTRAR MODAL DE CREACION DE USUARIO
 */
-btnNewUser.addEventListener("click", () => {
+btnNewUser.addEventListener("click", async () => {
+    // Áreas de error
+    const errorName = document.querySelector("#userNameError");
+    const errorEmail = document.querySelector("#userEmailError");
+    const errorDocument = document.querySelector("#userDocumentError");
+    const errorRole = document.querySelector("#userRoleError");
+
+    // Ocultar todos los errores al inicio
+    errorName.classList.add("hidden");
+    errorEmail.classList.add("hidden");
+    errorDocument.classList.add("hidden");
+    errorRole.classList.add("hidden");
+
     formUser.reset();
     editUserId.value = "";
     userModalTitle.textContent = "Nuevo Usuario";
@@ -530,6 +559,11 @@ formUser.addEventListener("submit", async (e) => {
     const userId = editUserId.value;
     const isEditing = userId !== "";
 
+    const isValid = await validateUserForm(modalAdminUser);
+
+    if (!isValid) {
+        return;
+    }
     try {
         /*
             CASO: EDICION DE DATOS DE USUARIO
@@ -562,6 +596,7 @@ formUser.addEventListener("submit", async (e) => {
         /*
             CASO: CREACION DE NUEVO USUARIO
         */
+
         const response = await createUserApi(userData);
         const newUser = response.data;
 

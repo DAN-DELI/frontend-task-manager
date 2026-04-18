@@ -61,6 +61,7 @@ export function hideEmpty(emptyState) {
  */
 export function showError(errorElement, message) {
     errorElement.textContent = message;
+    errorElement.classList.remove("hidden");
 }
 
 /**
@@ -69,4 +70,5 @@ export function showError(errorElement, message) {
  */
 export function clearError(errorElement) {
     errorElement.textContent = '';
+    errorElement.classList.add("hidden");
 }

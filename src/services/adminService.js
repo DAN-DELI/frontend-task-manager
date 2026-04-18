@@ -3,6 +3,9 @@
 // Contiene la lógica de filtrado y procesamiento de datos del admin
 // ---------------------------------------------------------------
 
+import { fetchUserByDocument } from "../api/usersApi.js";
+import { clearError, showError } from "../ui/uiState.js";
+
 /**
  * Aplica filtros de búsqueda y estado a una lista de tareas.
  * 
@@ -238,6 +241,100 @@ export function validateAreaForm(taskTable, withUsers) {
         isValid = false;
     } else {
         errorStatus.classList.add("hidden");
+    }
+
+    return isValid;
+}
+
+/**
+ * Valida los campos del formulario de usuarios, mostrando errores en caso de incumplir las reglas.
+ *
+ * @param {HTMLElement} userModal - Contenedor del formulario (modal) donde se encuentran los inputs y mensajes de error.
+ * @returns {Promise<boolean>} `true` si todos los campos son válidos, `false` en caso contrario.
+ */
+export async function validateUserForm(userModal) {
+
+    // Inputs
+    const nameInput = userModal.querySelector("#userName");
+    const emailInput = userModal.querySelector("#userEmail");
+    const documentInput = userModal.querySelector("#userDoc");
+    const roleSelect = userModal.querySelector("#userRole");
+
+    // Áreas de error
+    const errorName = userModal.querySelector("#userNameError");
+    const errorEmail = userModal.querySelector("#userEmailError");
+    const errorDocument = userModal.querySelector("#userDocumentError");
+    const errorRole = userModal.querySelector("#userRoleError");
+
+
+    let isValid = true;
+
+    // --- VALIDACIÓN DE NOMBRE (Zod: string, min 3, regex: letras/espacios) ---
+    const nameValue = nameInput?.value.trim() || "";
+    const nameRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/;
+
+    if (!nameValue) {
+        showError(errorName, "El nombre es obligatorio");
+        isValid = false;
+
+    } else if (!nameRegex.test(nameValue)) {
+        showError(errorName, "El nombre solo debe contener letras y espacios");
+        isValid = false;
+
+    } else if (nameValue.length < 3) {
+        showError(errorName, "El nombre debe tener al menos 3 caracteres");
+        isValid = false;
+
+    } else {
+        clearError(errorName)
+    }
+
+    // --- VALIDACIÓN DE EMAIL (Zod: string, email format) ---
+    const emailValue = emailInput?.value.trim() || "";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailValue) {
+        showError(errorEmail, "El correo electrónico es obligatorio");
+        isValid = false;
+
+    } else if (!emailRegex.test(emailValue)) {
+        showError(errorEmail, "El correo electrónico no es válido");
+        isValid = false;
+
+    } else {
+        clearError(errorEmail)
+    }
+
+    // --- VALIDACIÓN DE DOCUMENTO (Zod: string, solo numeros, no inicia por 0, min 5, unique) ---
+    const documentValue = documentInput?.value.trim() || "";
+    let registeredDocument = null;
+
+    if (!documentValue) {
+        showError(errorDocument, "El documento es obligatorio");
+        isValid = false;
+
+    } else if (!/^\d+$/.test(documentValue)) {
+        showError(errorDocument, "El documento solo debe contener números");
+        isValid = false;
+
+    } else if (documentValue.startsWith("0")) {
+        showError(errorDocument, "El documento no puede iniciar en 0");
+        isValid = false;
+
+    } else if (documentValue.length < 5) {
+        showError(errorDocument, "El documento debe tener al menos 5 dígitos");
+        isValid = false;
+
+    } else {
+        const currentUserId = userModal.querySelector("#editUserId")?.value;
+        registeredDocument = await fetchUserByDocument(documentValue);
+
+        if (registeredDocument && (String(registeredDocument.id) !== String(currentUserId))) {
+            showError(errorDocument, "El documento ya está registrado");
+            isValid = false;
+        } else {
+            clearError(errorDocument)
+        }
     }
 
     return isValid;
