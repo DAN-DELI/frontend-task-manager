@@ -106,7 +106,6 @@
 
             </section>
 
-            <!-- ELIMINAR ESTE FILTRO Y CAMBIAR EL BOTON -->
             <section id="usersSection" class="admin-section hidden">
 
                 <div class="admin-toolbar">
@@ -121,7 +120,7 @@
                     <table class="admin-table text-center">
                         <thead>
                             <tr>
-                                <th>Documento (ID)</th>
+                                <th>Documento</th>
                                 <th>Nombre Completo</th>
                                 <th>Correo Electrónico</th>
                                 <th>Tareas Asignadas</th>
@@ -142,7 +141,7 @@
 
             <!-- FORMULARIO DE REGISTRO DE TAREAS -->
             <div id="task-section" class="modal-overlay hidden">
-                <div class="card modal-content">
+                <div id="task-table" class="card modal-content">
 
                     <div class="card form-card no-padding" style="border: none; box-shadow: none;">
                         <h2 class="card__title">Registrar Nueva Tarea</h2>
@@ -151,17 +150,18 @@
                             <!-- Título de la tarea -->
                             <div class="form__group">
                                 <label for="taskTitle" class="form__label">Título de la tarea</label>
-                                <input type="text" id="taskTitleArea" class="form__input"
-                                    placeholder="Ingresa el titulo..." aria-required="true">
+                                <input type="text" id="taskTitleArea" class="form__input taskTitleArea"
+                                    placeholder="Ingresa el titulo..." aria-required="true" maxlength="150">
                                 <span class="form__error hidden" id="taskTitleError"></span>
                             </div>
 
                             <!-- Descripción de la tarea -->
                             <div class="form__group">
                                 <label for="taskDescription" class="form__label">Descripción</label>
-                                <textarea id="taskDescriptionArea" class="form__input form__textarea"
-                                    placeholder="Describe la tarea en detalle..." rows="4"
-                                    aria-required="true"></textarea>
+                                <textarea id="taskDescriptionArea"
+                                    class="form__input form__textarea taskDescriptionArea"
+                                    placeholder="Describe la tarea en detalle..." rows="4" aria-required="true"
+                                    maxlength="2000"></textarea>
                                 <span class="form__error hidden" id="taskDescriptionError"></span>
                             </div>
 
@@ -177,13 +177,12 @@
                                         <span>Seleccionar todos</span>
                                     </label>
 
-                                    <div id="individualUsersList">
+                                    <div id="individualUsersList" class="taskUsersArea">
                                         <p style="font-size: 0.9rem; color: #666; font-style: italic;">Cargando lista de
                                             usuarios...</p>
                                     </div>
                                 </div>
-                                <span class="form__error hidden" id="userSelectionError">Debes seleccionar al menos un
-                                    usuario</span>
+                                <span class="form__error hidden" id="userSelectionError"></span>
                             </div>
 
                             <!-- Estado de la tarea -->
@@ -229,7 +228,7 @@
 
             <!-- CARD DE MODIFICACION DE USUARIO -->
             <div id="modalUserForm" class="modal-overlay hidden">
-                <div class="card card--login modal-content">
+                <div class="card card--login modal-content modalAdminUser">
                     <h2 id="userModalTitle" class="card__title">Nuevo Usuario</h2>
                     <p class="card__subtitle">Completa la información del perfil</p>
 
@@ -238,30 +237,32 @@
                         <div class="form__group">
                             <label for="userName" style="display: block; margin-bottom: 5px; font-weight: bold;">Nombre
                                 Completo:</label>
-                            <input type="text" id="userName" class="form__input" required>
+                            <input type="text" id="userName" class="form__input userName" maxlength="100">
+                            <span class="form__error hidden" id="userNameError"></span>
                         </div>
 
                         <div class="form__group">
                             <label for="userEmail" style="display: block; margin-bottom: 5px; font-weight: bold;">Correo
                                 Electrónico:</label>
-                            <input type="email" id="userEmail" class="form__input" required>
+                            <input id="userEmail" class="form__input userEmail" maxlength="200">
+                            <span class="form__error hidden" id="userEmailError"></span>
                         </div>
 
                         <div class="form__group">
                             <label for="userDoc"
-                                style="display: block; margin-bottom: 5px; font-weight: bold;">Documento
-                                (ID
-                                Login):</label>
-                            <input type="text" id="userDoc" class="form__input" required>
+                                style="display: block; margin-bottom: 5px; font-weight: bold;">Documento:</label>
+                            <input type="text" id="userDoc" class="form__input userDoc" maxlength="20">
+                            <span class="form__error hidden" id="userDocumentError"></span>
                         </div>
 
                         <div class="form__group">
                             <label for="userRole" style="display: block; margin-bottom: 5px; font-weight: bold;">Rol del
                                 Sistema:</label>
-                            <select id="userRole" class="form__input" required>
+                            <select id="userRole" class="form__input userRole">
                                 <option value="user">Usuario Estándar</option>
                                 <option value="admin">Administrador</option>
                             </select>
+                            <span class="form__error hidden" id="userRoleError"></span>
                         </div>
 
                         <div style="display: flex; gap: 10px; margin-top: 20px;">
