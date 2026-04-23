@@ -14,7 +14,7 @@ import { getSelectedValues, isValidInput, processTasks } from "../utils/helpers.
  */
 export async function getTasksByUser(userId) {
     const tasks = await fetchTasks();
-    
+
     return tasks.filter(t => Number(t.user_id) === Number(userId));
 }
 /**
@@ -83,42 +83,6 @@ export function sortTasks(tasks, criterio) {
         default:
             return copy;
     }
-}
-/**
- * Valida todos los campos del formulario
- * @returns {boolean} - true si todos los campos son válidos, false si alguno no lo es
- */
-export function validateForm(taskTitle, taskDescription, taskStatus, taskTitleError, taskDescriptionError, taskStatusError) {
-    let isValid = true;
-
-    if (!isValidInput(taskTitle.value)) {
-        showError(taskTitleError, 'El título no puede estar vacío.');
-        showEmpty(taskTitleError);
-        isValid = false;
-    } else {
-        clearError(taskTitleError);
-        hideEmpty(taskTitleError);
-    }
-
-    if (!isValidInput(taskDescription.value)) {
-        showError(taskDescriptionError, 'La descripción no puede estar vacía.');
-        showEmpty(taskDescriptionError);
-        isValid = false;
-    } else {
-        clearError(taskDescriptionError);
-        hideEmpty(taskDescriptionError);
-    }
-
-    if (!isValidInput(taskStatus.value)) {
-        showError(taskStatusError, 'Debes seleccionar un estado.');
-        showEmpty(taskStatusError);
-        isValid = false;
-    } else {
-        clearError(taskStatusError);
-        hideEmpty(taskStatusError);
-    }
-
-    return isValid;
 }
 
 /**

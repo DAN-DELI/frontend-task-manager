@@ -7,18 +7,18 @@
 // - Exporta las tareas visibles
 // ---------------------------------------------------------------
 
-import { getTasksByUser, orderFilter, saveTask, validateForm } from "./services/tasksService.js";
+import { getTasksByUser, orderFilter, saveTask } from "./services/tasksService.js";
 import { renderTasks, resetFiltersUI, tasksNull, updateMessageCounter } from "./ui/tasksUI.js";
 import { hideEmpty, hideUserUI, showAdminUI, showEmpty, showUserUI } from "./ui/uiState.js";
 import { showNotification } from "./ui/notificationsUI.js";
 import { generateTasksJSON } from "./services/exportService.js";
 import { downloadJSONFile } from "./ui/exportUI.js";
 import { getCurrentTimestamp } from "./utils/helpers.js";
+import { userValidateForm } from "./services/userService.js";
 
 const header = document.querySelector(".header");
 const loginWrapper = document.getElementById("login-wrapper");
 const footer = document.querySelector(".footer");
-const adminConsole = document.getElementById("admin-console");
 const btnTextLogout = document.querySelector(".btn-text-logout");
 
 const userInfo = document.getElementById("userInfo");
@@ -34,6 +34,7 @@ const userRolDisplay = document.getElementById("userRolDisplay");
 const emptyState = document.getElementById("emptyState");
 
 // form de tareas
+const taskArea = document.getElementById("task-section")
 const taskTitleArea = document.getElementById("taskTitleArea");
 const taskDescriptionArea = document.getElementById("taskDescriptionArea");
 const taskStatusArea = document.getElementById("taskStatusArea");
@@ -70,7 +71,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             currentUser = JSON.parse(sessionData);
         } else {
             // Si no hay nada, se envia a login
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
             return;
         }
 
@@ -78,7 +79,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         nameDisplay.textContent = currentUser.name;
         emailDisplay.textContent = currentUser.email;
-        userRolDisplay.textContent = currentUser.role; 
+        userRolDisplay.textContent = currentUser.role;
 
         // Traemos las tareas (getTasksByUser ya debe estar adaptado internamente)
         tasksUser = await getTasksByUser(currentUser.id);
@@ -102,7 +103,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 /**
  * Maneja el envío del formulario de creación de tareas.
  * - Valida que exista un usuario validado
- * - Valida los campos del formulario con `validateForm`
+ * - Valida los campos del formulario con `userValidateForm`
  * - Construye el objeto tarea y lo persiste con `saveTask`
  * - Refresca la lista de tareas mostrada
  */
@@ -114,12 +115,14 @@ taskForm.addEventListener("submit", async e => {
         return;
     }
 
-    if (!validateForm(taskTitleArea, taskDescriptionArea, taskStatusArea, taskTitleError, taskDescriptionError, taskStatusError)) {
-        return;
+    const isValid = await userValidateForm(taskArea);
+
+    if (!isValid) {
+        return
     }
 
     const task = {
-        user_id: currentUser.id, 
+        user_id: currentUser.id,
         title: taskTitleArea.value.trim(),
         description: taskDescriptionArea.value.trim(),
         status: taskStatusArea.value,
@@ -214,13 +217,3 @@ btnTextLogout.addEventListener("click", () => {
         }, 500)
     }
 });
-
-if (adminConsole) {
-    adminConsole.addEventListener("click", (e) => {
-        // Si el clic fue en un botón o tarjeta dentro de la consola de admin
-        const card = e.target.closest(".card"); // O la clase/ID que tengan tus tarjetas
-        if (card) {
-            window.location.href = "admin.html";
-        }
-    });
-}
