@@ -16,7 +16,6 @@ import { fetchTasks, deleteTaskApi, updateTaskApi, createTask } from "./api/task
 import { fetchUsers, deleteUserApi, updateUserApi, createUserApi } from "./api/usersApi.js";
 
 // Services - Lógica de negocio
-import { validateForm } from "./services/tasksService.js";
 import {
     applyAdminTaskFilters,
     applyAdminUserFilters,
@@ -24,7 +23,9 @@ import {
     removeTaskFromArray,
     updateUserInArray,
     removeUserFromArray,
-    prepareMultipleTasks
+    prepareMultipleTasks,
+    validateAreaForm,
+    validateUserForm
 } from "./services/adminService.js";
 
 // UI - Renderizado y manipulación del DOM
@@ -59,6 +60,7 @@ const userRolDisplay = document.getElementById("userRolDisplay");
 const body = document.querySelector("body");
 
 // Formulario de tareas
+const taskTable = document.getElementById("task-table")
 const formCard = document.querySelector(".form-card");
 const taskTitleArea = document.getElementById("taskTitleArea");
 const taskDescriptionArea = document.getElementById("taskDescriptionArea");
@@ -86,6 +88,7 @@ const taskSection = document.getElementById("task-section");
 const adminSearchUser = document.getElementById("adminSearchUser");
 
 // Modal de usuario
+const modalAdminUser = document.querySelector("#modalUserForm")
 const btnNewUser = document.getElementById("btnNewUser");
 const modalUserForm = document.getElementById("modalUserForm");
 const btnCancelUser = document.getElementById("btnCancelUser");
@@ -343,14 +346,16 @@ formNewGlobalTask.addEventListener("submit", async (e) => {
 
     const taskId = formCard.dataset.id;
 
+    // Validacion total del formulario
+    if (!validateAreaForm(taskTable, taskId)) {
+        return
+    }
+
     // =================================
     // CASO: EDICIÓN DE TAREA
     // =================================
     if (taskId) {
         showCustomConfirm("Editar tarea", "¿Estas seguro de que deseas editar esta tarea?", async () => {
-            if (!validateForm(taskTitleArea, taskDescriptionArea, taskStatusArea, taskTitleError, taskDescriptionError, taskStatusError)) {
-                return;
-            }
 
             const newTaskUpdate = {
                 title: taskTitleArea.value,
@@ -373,7 +378,7 @@ formNewGlobalTask.addEventListener("submit", async (e) => {
                 formCard.removeAttribute("data-id");
                 hideEmpty(userSelectionError);
             } catch (error) {
-                console.error("Error al actualizar tarea:", error);
+                console.log("[ERROR]", error.message);
                 showNotification("Error al actualizar la tarea", "error");
             }
         });
@@ -386,23 +391,6 @@ formNewGlobalTask.addEventListener("submit", async (e) => {
 
     // Obtener IDs de usuarios seleccionados
     const selectedIds = Array.from(document.querySelectorAll('.user-assign-check:checked')).map(cb => cb.value);
-
-    let next = true;
-
-    // Validar selección de usuarios
-    if (selectedIds.length === 0) {
-        showEmpty(userSelectionError);
-        next = false;
-    } else {
-        hideEmpty(userSelectionError);
-    }
-
-    // Validar campos del formulario
-    if (!validateForm(taskTitleArea, taskDescriptionArea, taskStatusArea, taskTitleError, taskDescriptionError, taskStatusError)) {
-        next = false;;
-    }
-
-    if (!next) return;
 
     try {
         // Preparar tareas para cada usuario seleccionado
@@ -499,6 +487,18 @@ adminUsersTableBody.addEventListener("click", (e) => {
         const userId = btnEdit.getAttribute("data-id");
         const user = allUsers.find(u => String(u.id) === String(userId));
 
+        // Áreas de error
+        const errorName = document.querySelector("#userNameError");
+        const errorEmail = document.querySelector("#userEmailError");
+        const errorDocument = document.querySelector("#userDocumentError");
+        const errorRole = document.querySelector("#userRoleError");
+
+        // Ocultar todos los errores al inicio
+        errorName.classList.add("hidden");
+        errorEmail.classList.add("hidden");
+        errorDocument.classList.add("hidden");
+        errorRole.classList.add("hidden");
+
         if (user) {
             editUserId.value = user.id;
             userNameInput.value = user.name;
@@ -518,7 +518,19 @@ adminUsersTableBody.addEventListener("click", (e) => {
 /*
     ACCION: MOSTRAR MODAL DE CREACION DE USUARIO
 */
-btnNewUser.addEventListener("click", () => {
+btnNewUser.addEventListener("click", async () => {
+    // Áreas de error
+    const errorName = document.querySelector("#userNameError");
+    const errorEmail = document.querySelector("#userEmailError");
+    const errorDocument = document.querySelector("#userDocumentError");
+    const errorRole = document.querySelector("#userRoleError");
+
+    // Ocultar todos los errores al inicio
+    errorName.classList.add("hidden");
+    errorEmail.classList.add("hidden");
+    errorDocument.classList.add("hidden");
+    errorRole.classList.add("hidden");
+
     formUser.reset();
     editUserId.value = "";
     userModalTitle.textContent = "Nuevo Usuario";
@@ -547,6 +559,11 @@ formUser.addEventListener("submit", async (e) => {
     const userId = editUserId.value;
     const isEditing = userId !== "";
 
+    const isValid = await validateUserForm(modalAdminUser);
+
+    if (!isValid) {
+        return;
+    }
     try {
         /*
             CASO: EDICION DE DATOS DE USUARIO
@@ -579,6 +596,7 @@ formUser.addEventListener("submit", async (e) => {
         /*
             CASO: CREACION DE NUEVO USUARIO
         */
+
         const response = await createUserApi(userData);
         const newUser = response.data;
 
