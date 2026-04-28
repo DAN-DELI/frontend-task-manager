@@ -2,7 +2,7 @@
 // JAVASCRIPT PARA EL ARCHIVO "login.html"
 // ========================================
 
-import { validateUserService } from "./services/userService.js";
+import { validateUserService } from "./services/userPanel.service.js";
 import { showNotification } from "./ui/notificationsUI.js";
 
 const validateBtn = document.getElementById("validateBtn");
@@ -16,6 +16,7 @@ const documentoInput = document.getElementById("documento");
  */
 validateBtn.addEventListener("click", async (e) => {
     e.preventDefault();
+
     const docValue = documentoInput.value.trim();
 
     documentoInput.value = "";
@@ -23,14 +24,16 @@ validateBtn.addEventListener("click", async (e) => {
 
     if (!docValue || isNaN(docValue)) {
         showNotification("Documento inválido. Por favor, ingresa un número.", "warning");
+        documentoInput.focus();
         return;
     }
 
     try {
-        let currentUser = await validateUserService(docValue);
+        let currentUser = await validateUserService(docValue); // Mal
 
         if (currentUser == null) {
             showNotification("Usuario no registrado.", "error");
+            documentoInput.focus();
             return;
         }
 
@@ -46,7 +49,6 @@ validateBtn.addEventListener("click", async (e) => {
 
 
     } catch (error) {
-        // Captura el mensaje real enviado por el backend (vía response.handler)
         showNotification(error.message || "Error de conexión con el servidor", "error");
         console.error("Se ha presentado un error en el login: ", error);
     }
