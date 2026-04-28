@@ -64,7 +64,7 @@ export function renderAdminTasksTable(tasksToRender, allUsers) {
     adminTasksTableBody.innerHTML = "";
 
     if (tasksToRender.length === 0) {
-        adminTasksTableBody.innerHTML = `<tr><td colspan="6" class="table-empty">No se encontraron tareas con estos filtros.</td></tr>`;
+        adminTasksTableBody.innerHTML = `<tr><td colspan="6" class="table-empty">No se encontraron tareas..</td></tr>`;
         return;
     }
 
@@ -164,9 +164,8 @@ export function renderAdminUsersTable(usersToRender, allTasks) {
  * Renderiza los checkboxes para asignar tareas a múltiples usuarios.
  * @param {Array} users - Lista de usuarios no administradores
  */
-export async function renderAssigneeCheckboxes(fetchUsersFn) {
+export async function renderAssigneeCheckboxes(users) {
     try {
-        const users = await fetchUsersFn();
         const listContainer = document.getElementById('individualUsersList');
 
         const clientUsers = users.filter(u => u.role !== 'admin');
@@ -188,4 +187,29 @@ export async function renderAssigneeCheckboxes(fetchUsersFn) {
     } catch (error) {
         console.error("Error cargando usuarios:", error);
     }
+}
+
+// RENDERIZA TABLA DE EDICION DE TAREAS
+export function uiEditTask(card, task) {
+    // Asignacion en el DOM
+    const titulo = card.querySelector(".card__title")
+    const taskTitle = card.querySelector('#taskTitleArea');
+    const taskDescription = card.querySelector('#taskDescriptionArea');
+    const assignUserContainer = card.querySelector('.assing-user');
+    const taskStatus = card.querySelector('#taskStatusArea');
+    const btnEdit = card.querySelector(".btn--primary")
+
+    assignUserContainer.classList.add("hidden");
+
+    // Guardar estado en el modal
+    card.dataset.id = task.id;
+
+    // Renderizamos la tarea
+    titulo.textContent = `Edicion de tarea`;
+    taskTitle.value = task.title;
+    taskDescription.value = task.description;
+    taskStatus.value = task.status;
+    btnEdit.textContent = "Editar tarea"
+
+    btnEdit.classList.add("confirmEdit")
 }
