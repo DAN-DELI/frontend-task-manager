@@ -2,10 +2,17 @@
 // SERVICIO DE TAREAS (LÓGICA)
 // ---------------------------------------------------------------
 
-import { fetchTasks, createTask } from "../api/tasksApi.js";
+import { fetchTasks, createTask, deleteTaskApi, updateTaskApi } from "../api/tasksApi.js";
+import { showNotification } from "../ui/notificationsUI.js";
 import { filterVoid, renderTasks, tasksNull, updateMessageCounter } from "../ui/tasksUI.js";
 import { clearError, hideEmpty, showEmpty, showError } from "../ui/uiState.js";
 import { getSelectedValues, isValidInput, processTasks } from "../utils/helpers.js";
+
+
+export async function getAllTasks() {
+    const allTasks = await fetchTasks()
+    return allTasks
+}
 
 /**
  * Obtiene las tareas pertenecientes a un usuario específico.
@@ -129,3 +136,74 @@ export async function postDelete(userId, container, messagesFilters) {
         filterVoid(container)
     }
 };
+
+export async function serviceDeleteTask(taskId) {
+    try {
+        const result = await deleteTaskApi(taskId); // Si falla, salta al catch
+
+        // Solo llega aquí si fue exitoso
+        if (!result.success) {
+            const detail = result.errors?.length
+                ? `${result.message}: ${result.errors.join(", ")}`
+                : result.message;
+
+            console.error("[ERROR]: ", detail); // Mensaje informativo al programador
+            showNotification("No se pudo actualizar el usuario", "error"); // Mensaje generico al usuario
+            return { ok: false, data: null };
+        }
+
+        showNotification(result.message, "success")
+        return { ok: true, data: null }
+
+    } catch (error) {
+        console.error("[ERROR]: ", error.message);
+        showNotification("No se pudo actualizar la tarea", "error");
+        return { ok: false, data: null };
+    }
+}
+
+export async function serviceUpdateTask(taskId, newTaskUpdate) {
+    try {
+        const result = await updateTaskApi(taskId, newTaskUpdate);
+
+        if (!result.success) {
+            const detail = result.errors?.length
+                ? `${result.message}: ${result.errors.join(", ")}`
+                : result.message;
+
+            console.error("[ERROR]: ", detail); // Mensaje informativo al programador
+            showNotification("No se pudo actualizar el usuario", "error"); // Mensaje generico al usuario
+            return { ok: false, data: null };
+        }
+
+        showNotification(result.message, "success")
+        return { ok: true, data: result.data }
+
+    } catch (error) {
+        console.error("[ERROR]: ", error.message);
+        showNotification("No se pudo actualizar la tarea", "error");
+        return { ok: false, data: null };
+    }
+}
+
+export async function servicePostTask(tasksToCreate) {
+    try {
+        const promises = tasksToCreate.map(task => createTask(task));
+        const responses = await Promise.all(promises);
+
+        const allTasksCreated = responses.map(res => res.data);
+
+        const singular = allTasksCreated.length === 1;
+        showNotification(
+            `${singular ? "Tarea" : "Tareas"} creada${singular ? "" : "s"} exitosamente`,
+            "success"
+        );
+
+        return { ok: true, data: allTasksCreated };
+
+    } catch (error) {
+        console.error("[ERROR]: ", error.message);
+        showNotification("No se pudo crear las tareas", "error");
+        return { ok: false, data: null };
+    }
+}
