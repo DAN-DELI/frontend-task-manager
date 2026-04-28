@@ -16,14 +16,6 @@ export function showUserUI(userInfo, form, messages, header, footer) {
     footer.classList.remove("hidden");
 }
 
-export function showAdminUI(userInfo, form, header, footer, adminConsole) {
-    userInfo.classList.remove("hidden");
-    form.classList.remove("hidden");
-    header.classList.remove("hidden");
-    footer.classList.remove("hidden");
-    adminConsole.classList.remove("hidden");
-}
-
 /**
  * Oculta las secciones de usuario/form/mensajes (estado inicial).
  * @param {HTMLElement} userInfo - Contenedor de la información del usuario
@@ -71,4 +63,12 @@ export function showError(errorElement, message) {
 export function clearError(errorElement) {
     errorElement.textContent = '';
     errorElement.classList.add("hidden");
+}
+
+export function showMessage(element, message) {
+    element.textContent = message
+}
+
+export function innerHTML(element, body) {
+    element.innerHTML = body;
 }
