@@ -197,32 +197,6 @@ export function updateMessageCounter(count) {
     }
 }
 
-// TABLA DE EDICION DE TAREAS
-export function uiEditTask(card, task) {
-    // Asignacion en el DOM
-    const titulo = card.querySelector(".card__title")
-    const taskTitle = card.querySelector('#taskTitleArea');
-    const taskDescription = card.querySelector('#taskDescriptionArea');
-    const assignUserContainer = card.querySelector('.assing-user');
-    const taskStatus = card.querySelector('#taskStatusArea');
-    const btnEdit = card.querySelector(".btn--primary")
-
-    hideEmpty(assignUserContainer);
-
-    // Guardar estado en el modal
-    card.dataset.id = task.id;
-
-    // Renderizamos la tarea
-    titulo.textContent = `Edicion de tarea`;
-    taskTitle.value = task.title;
-    taskDescription.value = task.description;
-    taskStatus.value = task.status;
-    btnEdit.textContent = "Editar tarea"
-
-    btnEdit.classList.add("confirmEdit")
-}
-
-
 export function repaintTask(oldTask, newTask) {
     oldTask.title = newTask.title
     oldTask.description = newTask.description
