@@ -32,28 +32,15 @@ export async function fetchUserById(id) {
  * @returns {Promise<Object|null>} Objeto usuario o null si no existe
  */
 export async function fetchUserByDocument(document) {
-    try {
-        const res = await fetch(`http://localhost:3000/users?document=${document}`);
 
-        if (!res.ok) {
-            // Error real de red o servidor
-            return null;
-        }
+    const res = await fetch(`http://localhost:3000/users?document=${document}`);
 
-        const response = await res.json();
-
-        // Si no hay usuario
-        if (!response || response.length === 0) {
-            return null;
-        }
-
-        return response.data;
-
-    } catch (error) {
-        // Solo errores reales (red caída, etc.)
-        console.error("Error al buscar usuario:", error);
-        return null;
+    if (res.status >= 500) {
+        throw new Error("Error del servidor al buscar usuario usuario");
     }
+
+    const response = await res.json();
+    return response; // retorna { success, message, data, errors }
 }
 
 /**

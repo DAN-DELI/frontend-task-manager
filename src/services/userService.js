@@ -1,4 +1,4 @@
-import { createUserApi, deleteUserApi, fetchUsers, updateUserApi } from "../api/usersApi.js";
+import { createUserApi, deleteUserApi, fetchUserByDocument, fetchUsers, updateUserApi } from "../api/usersApi.js";
 import { showNotification } from "../ui/notificationsUI.js";
 
 
@@ -15,6 +15,26 @@ export async function getAllUsers() {
 export function getUserNameById(userId, allUsers) {
     const user = allUsers.find(u => String(u.id) === String(userId));
     return user ? user.name : "este usuario";
+}
+
+export async function getUserByDocument(document) {
+    try {
+        const result = await fetchUserByDocument(document)
+
+        if (!result.success) {
+            const detail = result.errors?.length
+                ? `${result.message}: ${result.errors.join(", ")}`
+                : result.message;
+
+            return { ok: false, data: null, message: detail };
+        }
+
+        return { ok: true, data: result.data };
+
+    } catch (error) {
+        console.error("[ERROR]:", error.message); // Mensaje informativo al programador
+        return { ok: false, data: null };
+    }
 }
 
 export async function servicePatchUser(userId, userData) {

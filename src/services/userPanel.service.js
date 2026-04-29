@@ -7,24 +7,6 @@ import { fetchUserByDocument } from "../api/usersApi.js";
 import { clearError, showError } from "../ui/uiState.js";
 
 /**
- * Valida y retorna los datos de un usuario por su ID.
- * - Si el usuario no existe, retorna `null` (passthrough desde la API).
- *
- * @param {number|string} document - Identificador del usuario a validar
- * @returns {Promise<Object|null>} Usuario o null
- */
-export async function validateUserService(document) {
-    try {
-        // La API ya retorna response.data (el objeto usuario)
-        const user = await fetchUserByDocument(document);
-        return user;
-
-    } catch (error) {
-        console.log(`[ERROR]: ${error}`)
-    }
-}
-
-/**
  * Valida los campos de un formulario de tareas, mostrando errores si los contiene
  *
  * @param {HTMLElement} taskTable - Contenedor del formulario donde se buscarán los inputs y mensajes de error.

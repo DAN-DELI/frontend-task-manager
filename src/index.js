@@ -2,7 +2,7 @@
 // JAVASCRIPT PARA EL ARCHIVO "login.html"
 // ========================================
 
-import { validateUserService } from "./services/userPanel.service.js";
+import { getUserByDocument } from "./services/userService.js";
 import { showNotification } from "./ui/notificationsUI.js";
 
 const validateBtn = document.getElementById("validateBtn");
@@ -11,7 +11,7 @@ const documentoInput = document.getElementById("documento");
 // ================= VALIDAR USUARIO =================
 /**
  * Evento para validar el usuario a partir del ID ingresado.
- * - Llama a `validateUserService` para obtener datos del usuario
+ * - Llama a `serviceGetUserByDocument` para obtener datos del usuario
  * - Si existe, carga las tareas del usuario y renderiza la UI
  */
 validateBtn.addEventListener("click", async (e) => {
@@ -29,24 +29,23 @@ validateBtn.addEventListener("click", async (e) => {
     }
 
     try {
-        let currentUser = await validateUserService(docValue); // Mal
+        let result = await getUserByDocument(docValue);
 
-        if (currentUser == null) {
+        if (!result.ok) {
             showNotification("Usuario no registrado.", "error");
             documentoInput.focus();
             return;
         }
 
-        // se guarda el usuario que acaba de ingresar
-        localStorage.setItem('usuarioActivo', JSON.stringify(currentUser));
+        // Se guarda el usuario que acaba de ingresar
+        localStorage.setItem('usuarioActivo', JSON.stringify(result.data));
 
         // se envia al archivo correspondiente al rol
-        if (currentUser.role === "admin") {
+        if (result.data.role === "admin") {
             window.location.href = "admin.html";
         } else {
             window.location.href = "user.html";
         }
-
 
     } catch (error) {
         showNotification(error.message || "Error de conexión con el servidor", "error");
