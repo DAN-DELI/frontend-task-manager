@@ -118,7 +118,6 @@ function makeEditable(card, task, currentUser) {
             ? { status: newStatus } // Si es user, solo enviamos el estado
             : { title: newTitle, description: newDesc, status: newStatus };
         const updated = await updateTaskApi(task.id, dataToUpdate);
-        // const updated = await updateTaskApi(task.id, { title: newTitle, description: newDesc, status: newStatus });
 
         task.title = updated.title;
         task.description = updated.description;

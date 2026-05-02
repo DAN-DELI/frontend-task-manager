@@ -23,7 +23,7 @@ import {
     validateAreaForm,
     validateUserForm,
     loadAdminData
-} from "./services/adminService.js";
+} from "./services/adminPanel.service.js";
 
 // UI - Renderizado y manipulación del DOM
 import { showNotification } from "./ui/notificationsUI.js";

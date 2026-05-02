@@ -11,7 +11,7 @@ import { getTasksByUser, orderFilter, saveTask } from "./services/tasksService.j
 import { renderTasks, resetFiltersUI, tasksNull, updateMessageCounter } from "./ui/tasksUI.js";
 import { hideEmpty, hideUserUI, showEmpty, showUserUI } from "./ui/uiState.js";
 import { showNotification } from "./ui/notificationsUI.js";
-import { generateTasksJSON } from "./services/exportService.js";
+import { generateTasksJSON } from "./utils/export.js";
 import { downloadJSONFile } from "./ui/exportUI.js";
 import { getCurrentTimestamp } from "./utils/helpers.js";
 import { userValidateForm } from "./services/userPanel.service.js";
