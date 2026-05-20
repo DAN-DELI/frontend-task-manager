@@ -30,10 +30,23 @@ export async function fetchUsers() {
  * @throws {Error} Si hay error de servidor (distinto a 404)
  */
 export async function fetchUserById(id) {
-    const res = await apiFetch(`/api/users/${id}`);
+    console.log(`📡 Solicitando datos del usuario ID: ${id}`);
+    
+    // Si tienes problemas de 404, prueba quitando el '/api' de la siguiente línea
+    const res = await apiFetch(`/api/users/${id}`); 
     const response = await res.json();
 
-    if (!response.success) return null;
+    console.log("📥 Respuesta del backend para fetchUserById:", response);
+
+    if (!response.success) {
+        console.warn("⚠️ El backend retornó success: false", response);
+        return null;
+    }
+
+    // Solución al problema de las consultas MySQL: si es un arreglo, tomamos el primer objeto
+    if (Array.isArray(response.data) && response.data.length > 0) {
+        return response.data[0];
+    }
 
     return response.data;
 }

@@ -319,7 +319,7 @@ body {
 }
 
 /* ============================================
-   RESPONSIVE
+    RESPONSIVE
    ============================================ */
 
 @media (max-width: 768px) {
@@ -351,7 +351,7 @@ body {
 }
 
 /* ============================================
-   REGISTER - Solo ajustes específicos
+    REGISTER - Solo ajustes específicos
    ============================================ */
 
 /* El register usa las mismas clases que login (.auth-page, .auth-card, etc.)
@@ -398,7 +398,7 @@ body {
 
 
 /* ==========================================================================
-   ESTILOS PARA MENSAJES DE ERROR DE VALIDACIÓN
+    ESTILOS PARA MENSAJES DE ERROR DE VALIDACIÓN
    ========================================================================== */
 .error-message {
     color: #dc3545;
@@ -900,509 +900,251 @@ TASKS - Vista de tareas
         opacity: 1;
     }
 }
+/* ============================================
+    DASHBOARD & VISTAS PRIVADAS
+   ============================================ */
 
-/* 
-    SETTINGS 
- */
-
-/* ---------- Layout ---------- */
-.settings-page {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 36px 24px;
+.dashboard-container {
+    max-width: 1200px;
+    margin: 32px auto;
+    padding: 0 24px;
 }
 
-.settings-header {
-    margin-bottom: 32px;
+.view-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
 }
 
-.settings-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+.view-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-primary);
 }
 
-/* ---------- Cards ---------- */
-.settings-card {
+.content-card {
     background: var(--bg-secondary);
     border: 1px solid var(--bg-tertiary);
     border-radius: var(--radius-md);
     padding: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
 }
 
-.settings-card-appearance {
-    grid-column: 1 / -1;
-}
-
-.settings-card-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-}
-
-.settings-card-icon {
-    width: 40px;
-    height: 40px;
+/* Ajuste para inputs tipo select (Formularios) */
+.input-wrapper select {
+    width: 100%;
+    padding: 12px 14px;
+    background: var(--bg-primary);
+    border: 1px solid var(--bg-tertiary);
     border-radius: var(--radius-sm);
-    background: rgba(59, 130, 246, 0.1);
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--accent);
-    flex-shrink: 0;
-}
- 
-.settings-card-title {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 2px;
+    color: var(--text-primary);
+    font-size: 15px;
+    transition: var(--transition);
+    appearance: none;
 }
 
-.settings-card-subtitle {
-    font-size: 13px;
-    color: var(--text-secondary);
+.input-wrapper select:focus {
+    outline: none;
+    border-color: var(--accent);
 }
 
-/* ---------- Formularios ---------- */
-.settings-form {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.settings-form-actions {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 4px;
-}
-
-.btn-settings {
-    padding: 10px 20px;
-    font-size: 14px;
-    width: auto;
-}
-
-/* Input deshabilitado */
-.input-disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.input-hint {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-top: 4px;
-    display: block;
-}
-
-/* Input con ojo de contraseña */
-.input-password {
-    position: relative;
-}
-
-.input-password input {
-    padding-right: 42px !important;
-}
-
-.btn-toggle-password {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
+/* ============================================
+    BOTONES SECUNDARIOS Y PELIGRO
+   ============================================ */
+.btn-secondary {
+    padding: 8px 16px;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
     border: none;
-    color: var(--text-muted);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
-    padding: 4px;
-    display: flex;
-    align-items: center;
-    transition: color var(--transition);
+    transition: var(--transition);
 }
 
-.btn-toggle-password:hover {
+.btn-secondary:hover {
+    background: var(--text-muted);
+}
+
+.btn-danger {
+    padding: 8px 16px;
+    background: var(--danger);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-danger:hover {
+    background: var(--danger-hover);
+}
+
+/* ============================================
+    TABLAS DE DATOS
+   ============================================ */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.data-table th,
+.data-table td {
+    padding: 16px;
+    border-bottom: 1px solid var(--bg-tertiary);
+}
+
+.data-table th {
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.data-table td {
+    font-size: 14px;
     color: var(--text-primary);
 }
 
-/* ---------- Selector de tema ---------- */
-.theme-toggle-wrapper {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
+.data-table tr:hover td {
+    background: var(--bg-tertiary); /* Efecto hover en las filas */
 }
 
-.theme-option {
+.actions-cell {
     display: flex;
-    flex-direction: column;
+    gap: 8px;
+}
+
+/* ============================================
+   ROLE BADGES
+   ============================================ */
+
+.role-badge {
+    display: inline-flex;
     align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    font-size: 13px;
-    color: var(--text-secondary);
-    transition: color var(--transition);
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    white-space: nowrap;
 }
 
-.theme-option.theme-active {
-    color: var(--accent);
+/* Administrador - Red/Orange accent */
+.role-administrador {
+    background: rgba(239, 68, 68, 0.12);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
-.theme-preview {
-    width: 120px;
-    height: 80px;
+/* Evaluador - Blue accent */
+.role-evaluador {
+    background: rgba(59, 130, 246, 0.12);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+/* Aprendiz - Green accent */
+.role-aprendiz {
+    background: rgba(34, 197, 94, 0.12);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+/* Generic fallback for unknown roles */
+.role-sin-rol {
+    background: rgba(100, 116, 139, 0.12);
+    color: #94a3b8;
+    border: 1px solid rgba(100, 116, 139, 0.2);
+}
+
+/* ==========================================
+   ROLES CHECKBOX - INLINE EN FORMULARIO
+   ========================================== */
+
+.roles-checklist-inline {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.role-checkbox-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    background: var(--bg-primary);
+    border: 1px solid var(--bg-tertiary);
     border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+}
+
+.role-checkbox-item:hover {
+    border-color: var(--accent);
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.role-checkbox-input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.role-checkbox-checkmark {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
     border: 2px solid var(--bg-tertiary);
-    overflow: hidden;
-    transition: border-color var(--transition), box-shadow var(--transition);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    margin-top: 2px;
 }
 
-.theme-option.theme-active .theme-preview {
+.role-checkbox-checkmark svg {
+    opacity: 0;
+    transform: scale(0.8);
+    transition: var(--transition);
+    color: white;
+}
+
+.role-checkbox-input:checked ~ .role-checkbox-checkmark {
+    background: var(--accent);
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
-.theme-option:hover .theme-preview {
-    border-color: var(--accent);
+.role-checkbox-input:checked ~ .role-checkbox-checkmark svg {
+    opacity: 1;
+    transform: scale(1);
 }
 
-/* Preview oscuro */
-.theme-preview-dark {
-    background: #0f172a;
-}
-
-.theme-preview-dark .preview-bar {
-    height: 20px;
-    background: #1e293b;
-    border-bottom: 1px solid #334155;
-}
-
-.theme-preview-dark .preview-content {
-    padding: 10px;
+.role-checkbox-info {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    flex: 1;
 }
 
-.theme-preview-dark .preview-line {
-    height: 8px;
-    background: #334155;
-    border-radius: 4px;
-}
-
-.theme-preview-dark .preview-line.short {
-    width: 60%;
-    background: #1e293b;
-}
-
-/* Preview claro */
-.theme-preview-light {
-    background: #f8fafc;
-}
-
-.theme-preview-light .preview-bar {
-    height: 20px;
-    background: #ffffff;
-    border-bottom: 1px solid #e2e8f0;
-}
-
-.theme-preview-light .preview-content {
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.theme-preview-light .preview-line {
-    height: 8px;
-    background: #e2e8f0;
-    border-radius: 4px;
-}
-
-.theme-preview-light .preview-line.short {
-    width: 60%;
-    background: #f1f5f9;
-}
-
-/* ---------- Responsive ---------- */
-@media (max-width: 768px) {
-    .settings-page {
-        padding: 24px 16px;
-    }
-
-    .settings-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .settings-card-appearance {
-        grid-column: 1;
-    }
-}
-
-/* 
-    TEMA CLARO
-*/
-body.light-theme {
-    --bg-primary:    #f8fafc;
-    --bg-secondary:  #ffffff;
-    --bg-tertiary:   #e2e8f0;
-    --text-primary:  #0f172a;
-    --text-secondary: #475569;
-    --text-muted:    #94a3b8;
-}
-
-body.light-theme .settings-card,
-body.light-theme .task-card,
-body.light-theme .modal-content {
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-}
-/* 
-    TEMAS ADICIONALES
-*/
-
-/* ---------- Midnight Blue ---------- */
-body.theme-midnight {
-    --bg-primary:     #0a0f1e;
-    --bg-secondary:   #111827;
-    --bg-tertiary:    #1e2d45;
-    --text-primary:   #e2e8f0;
-    --text-secondary: #7a9bbf;
-    --text-muted:     #4a6a8a;
-    --accent:         #4f8ef7;
-}
-
-/* ---------- Forest ---------- */
-body.theme-forest {
-    --bg-primary:     #0a1410;
-    --bg-secondary:   #111f17;
-    --bg-tertiary:    #1a3326;
-    --text-primary:   #d4ede0;
-    --text-secondary: #6aaa86;
-    --text-muted:     #3d7a58;
-    --accent:         #34c77b;
-}
-
-/* ---------- Sunset ---------- */
-body.theme-sunset {
-    --bg-primary:     #1a0e0a;
-    --bg-secondary:   #231510;
-    --bg-tertiary:    #3d2118;
-    --text-primary:   #fde8d8;
-    --text-secondary: #c47a5a;
-    --text-muted:     #8a4a30;
-    --accent:         #f97316;
-}
-
-/* ---------- Lavender ---------- */
-body.theme-lavender {
-    --bg-primary:     #120e1e;
-    --bg-secondary:   #1a1428;
-    --bg-tertiary:    #2e2048;
-    --text-primary:   #ede8ff;
-    --text-secondary: #9b82d4;
-    --text-muted:     #6a5299;
-    --accent:         #a78bfa;
-}
-
-/* ---------- Ocean ---------- */
-body.theme-ocean {
-    --bg-primary:     #0d2137;
-    --bg-secondary:   #143350;
-    --bg-tertiary:    #1e4a6e;
-    --text-primary:   #d0eaf8;
-    --text-secondary: #7ab8d8;
-    --text-muted:     #4a8aaa;
-    --accent:         #22d3ee;
-}
-
-/* ---------- Rose ---------- */
-body.theme-rose {
-    --bg-primary:     #1e1018;
-    --bg-secondary:   #2d1824;
-    --bg-tertiary:    #4a2538;
-    --text-primary:   #fce8f0;
-    --text-secondary: #d48aaa;
-    --text-muted:     #8a4a6a;
-    --accent:         #f472b6;
-}
-
-/* ---------- Mocha ---------- */
-body.theme-mocha {
-    --bg-primary:     #1c1410;
-    --bg-secondary:   #2a1e18;
-    --bg-tertiary:    #3d2e24;
-    --text-primary:   #f0e6d8;
-    --text-secondary: #c4a882;
-    --text-muted:     #8a7055;
-    --accent:         #d4a574;
-}
-
-/* ---------- Previews de nuevos temas ---------- */
-.theme-preview-midnight {
-    background: #0a0f1e;
-}
-.theme-preview-midnight .preview-bar {
-    height: 20px;
-    background: #111827;
-    border-bottom: 1px solid #1e2d45;
-}
-.theme-preview-midnight .preview-content {
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-.theme-preview-midnight .preview-line {
-    height: 8px;
-    background: #1e2d45;
-    border-radius: 4px;
-}
-.theme-preview-midnight .preview-line.short {
-    width: 60%;
-    background: #111827;
-}
-
-.theme-preview-forest {
-    background: #0a1410;
-}
-.theme-preview-forest .preview-bar {
-    height: 20px;
-    background: #111f17;
-    border-bottom: 1px solid #1a3326;
-}
-.theme-preview-forest .preview-content {
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-.theme-preview-forest .preview-line {
-    height: 8px;
-    background: #1a3326;
-    border-radius: 4px;
-}
-.theme-preview-forest .preview-line.short {
-    width: 60%;
-    background: #111f17;
-}
-
-.theme-preview-sunset {
-    background: #1a0e0a;
-}
-.theme-preview-sunset .preview-bar {
-    height: 20px;
-    background: #231510;
-    border-bottom: 1px solid #3d2118;
-}
-.theme-preview-sunset .preview-content {
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-.theme-preview-sunset .preview-line {
-    height: 8px;
-    background: #3d2118;
-    border-radius: 4px;
-}
-.theme-preview-sunset .preview-line.short {
-    width: 60%;
-    background: #231510;
-}
-
-.theme-preview-lavender {
-    background: #120e1e;
-}
-.theme-preview-lavender .preview-bar {
-    height: 20px;
-    background: #1a1428;
-    border-bottom: 1px solid #2e2048;
-}
-.theme-preview-lavender .preview-content {
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-.theme-preview-lavender .preview-line {
-    height: 8px;
-    background: #2e2048;
-    border-radius: 4px;
-}
-.theme-preview-lavender .preview-line.short {
-    width: 60%;
-    background: #1a1428;
-}
-
-.theme-preview-ocean {
-    background: #0d2137;
-}
-.theme-preview-ocean .preview-bar {
-    height: 20px;
-    background: #143350;
-    border-bottom: 1px solid #1e4a6e;
-}
-.theme-preview-ocean .preview-content {
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-.theme-preview-ocean .preview-line {
-    height: 8px;
-    background: #1e4a6e;
-    border-radius: 4px;
-}
-.theme-preview-ocean .preview-line.short {
-    width: 60%;
-    background: #143350;
-}
-
-.theme-preview-rose {
-    background: #1e1018;
-}
-.theme-preview-rose .preview-bar {
-    height: 20px;
-    background: #2d1824;
-    border-bottom: 1px solid #4a2538;
-}
-.theme-preview-rose .preview-content {
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-.theme-preview-rose .preview-line {
-    height: 8px;
-    background: #4a2538;
-    border-radius: 4px;
-}
-.theme-preview-rose .preview-line.short {
-    width: 60%;
-    background: #2d1824;
-}
-
-.theme-preview-mocha {
-    background: #1c1410;
-}
-.theme-preview-mocha .preview-bar {
-    height: 20px;
-    background: #2a1e18;
-    border-bottom: 1px solid #3d2e24;
-}
-.theme-preview-mocha .preview-content {
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-.theme-preview-mocha .preview-line {
-    height: 8px;
-    background: #3d2e24;
-    border-radius: 4px;
-}
-.theme-preview-mocha .preview-line.short {
-    width: 60%;
-    background: #2a1e18;
+.role-checkbox-desc {
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.4;
 }
