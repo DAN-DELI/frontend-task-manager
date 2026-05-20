@@ -197,26 +197,46 @@ const handlePasswordSave = async (e) => {
 
 const THEME_KEY = 'tm_theme';
 
+const ALL_THEMES = ['dark', 'light', 'midnight', 'forest', 'sunset', 'lavender', 'ocean', 'rose', 'mocha'];
+
 const applyTheme = (theme) => {
-    document.body.classList.toggle('light-theme', theme === 'light');
+    // Quitar todos los temas del body
+    document.body.classList.remove(
+        'light-theme',
+        'theme-midnight',
+        'theme-forest',
+        'theme-sunset',
+        'theme-lavender',
+        'theme-ocean',
+        'theme-rose',
+        'theme-mocha'
+    );
+
+    // Aplicar el tema seleccionado
+    if (theme === 'light')    document.body.classList.add('light-theme');
+    if (theme === 'midnight') document.body.classList.add('theme-midnight');
+    if (theme === 'forest')   document.body.classList.add('theme-forest');
+    if (theme === 'sunset')   document.body.classList.add('theme-sunset');
+    if (theme === 'lavender') document.body.classList.add('theme-lavender');
+    if (theme === 'ocean')    document.body.classList.add('theme-ocean');
+    if (theme === 'rose')     document.body.classList.add('theme-rose');
+    if (theme === 'mocha')    document.body.classList.add('theme-mocha');
 
     // Marcar visualmente la opción activa
-    document.querySelector('#theme-dark')?.classList.toggle('theme-active', theme === 'dark');
-    document.querySelector('#theme-light')?.classList.toggle('theme-active', theme === 'light');
+    ALL_THEMES.forEach(t => {
+        document.querySelector(`#theme-${t}`)?.classList.toggle('theme-active', t === theme);
+    });
 };
 
 const initThemeToggle = () => {
     const savedTheme = localStorage.getItem(THEME_KEY) ?? 'dark';
     applyTheme(savedTheme);
 
-    document.querySelector('#theme-dark')?.addEventListener('click', () => {
-        localStorage.setItem(THEME_KEY, 'dark');
-        applyTheme('dark');
-    });
-
-    document.querySelector('#theme-light')?.addEventListener('click', () => {
-        localStorage.setItem(THEME_KEY, 'light');
-        applyTheme('light');
+    ALL_THEMES.forEach(theme => {
+        document.querySelector(`#theme-${theme}`)?.addEventListener('click', () => {
+            localStorage.setItem(THEME_KEY, theme);
+            applyTheme(theme);
+        });
     });
 };
 

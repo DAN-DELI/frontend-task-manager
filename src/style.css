@@ -1031,6 +1031,7 @@ TASKS - Vista de tareas
 .theme-toggle-wrapper {
     display: flex;
     gap: 16px;
+    flex-wrap: wrap;
 }
 
 .theme-option {
@@ -1155,4 +1156,253 @@ body.light-theme .settings-card,
 body.light-theme .task-card,
 body.light-theme .modal-content {
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+/* 
+    TEMAS ADICIONALES
+*/
+
+/* ---------- Midnight Blue ---------- */
+body.theme-midnight {
+    --bg-primary:     #0a0f1e;
+    --bg-secondary:   #111827;
+    --bg-tertiary:    #1e2d45;
+    --text-primary:   #e2e8f0;
+    --text-secondary: #7a9bbf;
+    --text-muted:     #4a6a8a;
+    --accent:         #4f8ef7;
+}
+
+/* ---------- Forest ---------- */
+body.theme-forest {
+    --bg-primary:     #0a1410;
+    --bg-secondary:   #111f17;
+    --bg-tertiary:    #1a3326;
+    --text-primary:   #d4ede0;
+    --text-secondary: #6aaa86;
+    --text-muted:     #3d7a58;
+    --accent:         #34c77b;
+}
+
+/* ---------- Sunset ---------- */
+body.theme-sunset {
+    --bg-primary:     #1a0e0a;
+    --bg-secondary:   #231510;
+    --bg-tertiary:    #3d2118;
+    --text-primary:   #fde8d8;
+    --text-secondary: #c47a5a;
+    --text-muted:     #8a4a30;
+    --accent:         #f97316;
+}
+
+/* ---------- Lavender ---------- */
+body.theme-lavender {
+    --bg-primary:     #120e1e;
+    --bg-secondary:   #1a1428;
+    --bg-tertiary:    #2e2048;
+    --text-primary:   #ede8ff;
+    --text-secondary: #9b82d4;
+    --text-muted:     #6a5299;
+    --accent:         #a78bfa;
+}
+
+/* ---------- Ocean ---------- */
+body.theme-ocean {
+    --bg-primary:     #0d2137;
+    --bg-secondary:   #143350;
+    --bg-tertiary:    #1e4a6e;
+    --text-primary:   #d0eaf8;
+    --text-secondary: #7ab8d8;
+    --text-muted:     #4a8aaa;
+    --accent:         #22d3ee;
+}
+
+/* ---------- Rose ---------- */
+body.theme-rose {
+    --bg-primary:     #1e1018;
+    --bg-secondary:   #2d1824;
+    --bg-tertiary:    #4a2538;
+    --text-primary:   #fce8f0;
+    --text-secondary: #d48aaa;
+    --text-muted:     #8a4a6a;
+    --accent:         #f472b6;
+}
+
+/* ---------- Mocha ---------- */
+body.theme-mocha {
+    --bg-primary:     #1c1410;
+    --bg-secondary:   #2a1e18;
+    --bg-tertiary:    #3d2e24;
+    --text-primary:   #f0e6d8;
+    --text-secondary: #c4a882;
+    --text-muted:     #8a7055;
+    --accent:         #d4a574;
+}
+
+/* ---------- Previews de nuevos temas ---------- */
+.theme-preview-midnight {
+    background: #0a0f1e;
+}
+.theme-preview-midnight .preview-bar {
+    height: 20px;
+    background: #111827;
+    border-bottom: 1px solid #1e2d45;
+}
+.theme-preview-midnight .preview-content {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.theme-preview-midnight .preview-line {
+    height: 8px;
+    background: #1e2d45;
+    border-radius: 4px;
+}
+.theme-preview-midnight .preview-line.short {
+    width: 60%;
+    background: #111827;
+}
+
+.theme-preview-forest {
+    background: #0a1410;
+}
+.theme-preview-forest .preview-bar {
+    height: 20px;
+    background: #111f17;
+    border-bottom: 1px solid #1a3326;
+}
+.theme-preview-forest .preview-content {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.theme-preview-forest .preview-line {
+    height: 8px;
+    background: #1a3326;
+    border-radius: 4px;
+}
+.theme-preview-forest .preview-line.short {
+    width: 60%;
+    background: #111f17;
+}
+
+.theme-preview-sunset {
+    background: #1a0e0a;
+}
+.theme-preview-sunset .preview-bar {
+    height: 20px;
+    background: #231510;
+    border-bottom: 1px solid #3d2118;
+}
+.theme-preview-sunset .preview-content {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.theme-preview-sunset .preview-line {
+    height: 8px;
+    background: #3d2118;
+    border-radius: 4px;
+}
+.theme-preview-sunset .preview-line.short {
+    width: 60%;
+    background: #231510;
+}
+
+.theme-preview-lavender {
+    background: #120e1e;
+}
+.theme-preview-lavender .preview-bar {
+    height: 20px;
+    background: #1a1428;
+    border-bottom: 1px solid #2e2048;
+}
+.theme-preview-lavender .preview-content {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.theme-preview-lavender .preview-line {
+    height: 8px;
+    background: #2e2048;
+    border-radius: 4px;
+}
+.theme-preview-lavender .preview-line.short {
+    width: 60%;
+    background: #1a1428;
+}
+
+.theme-preview-ocean {
+    background: #0d2137;
+}
+.theme-preview-ocean .preview-bar {
+    height: 20px;
+    background: #143350;
+    border-bottom: 1px solid #1e4a6e;
+}
+.theme-preview-ocean .preview-content {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.theme-preview-ocean .preview-line {
+    height: 8px;
+    background: #1e4a6e;
+    border-radius: 4px;
+}
+.theme-preview-ocean .preview-line.short {
+    width: 60%;
+    background: #143350;
+}
+
+.theme-preview-rose {
+    background: #1e1018;
+}
+.theme-preview-rose .preview-bar {
+    height: 20px;
+    background: #2d1824;
+    border-bottom: 1px solid #4a2538;
+}
+.theme-preview-rose .preview-content {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.theme-preview-rose .preview-line {
+    height: 8px;
+    background: #4a2538;
+    border-radius: 4px;
+}
+.theme-preview-rose .preview-line.short {
+    width: 60%;
+    background: #2d1824;
+}
+
+.theme-preview-mocha {
+    background: #1c1410;
+}
+.theme-preview-mocha .preview-bar {
+    height: 20px;
+    background: #2a1e18;
+    border-bottom: 1px solid #3d2e24;
+}
+.theme-preview-mocha .preview-content {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.theme-preview-mocha .preview-line {
+    height: 8px;
+    background: #3d2e24;
+    border-radius: 4px;
+}
+.theme-preview-mocha .preview-line.short {
+    width: 60%;
+    background: #2a1e18;
 }

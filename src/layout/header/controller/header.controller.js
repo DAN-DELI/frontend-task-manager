@@ -1,3 +1,4 @@
 export const headerInit = () => {
-    console.log("Header initialized");
+    console.log("Header initialized");    
 }
+

@@ -171,6 +171,82 @@ export const settingsView = () => {
                         </div>
                         <span>Claro</span>
                     </div>
+                    <div class="theme-option" id="theme-midnight">
+                        <div class="theme-preview theme-preview-midnight">
+                            <div class="preview-bar"></div>
+                            <div class="preview-content">
+                                <div class="preview-line"></div>
+                                <div class="preview-line short"></div>
+                            </div>
+                        </div>
+                        <span>Midnight</span>
+                    </div>
+
+                    <div class="theme-option" id="theme-forest">
+                        <div class="theme-preview theme-preview-forest">
+                            <div class="preview-bar"></div>
+                            <div class="preview-content">
+                                <div class="preview-line"></div>
+                                <div class="preview-line short"></div>
+                            </div>
+                        </div>
+                        <span>Forest</span>
+                    </div>
+
+                    <div class="theme-option" id="theme-sunset">
+                        <div class="theme-preview theme-preview-sunset">
+                            <div class="preview-bar"></div>
+                            <div class="preview-content">
+                                <div class="preview-line"></div>
+                                <div class="preview-line short"></div>
+                            </div>
+                        </div>
+                        <span>Sunset</span>
+                    </div>
+
+                    <div class="theme-option" id="theme-lavender">
+                        <div class="theme-preview theme-preview-lavender">
+                            <div class="preview-bar"></div>
+                            <div class="preview-content">
+                                <div class="preview-line"></div>
+                                <div class="preview-line short"></div>
+                            </div>
+                        </div>
+                        <span>Lavender</span>
+                    </div>
+
+                                        <div class="theme-option" id="theme-ocean">
+                        <div class="theme-preview theme-preview-ocean">
+                            <div class="preview-bar"></div>
+                            <div class="preview-content">
+                                <div class="preview-line"></div>
+                                <div class="preview-line short"></div>
+                            </div>
+                        </div>
+                        <span>Ocean</span>
+                    </div>
+
+                    <div class="theme-option" id="theme-rose">
+                        <div class="theme-preview theme-preview-rose">
+                            <div class="preview-bar"></div>
+                            <div class="preview-content">
+                                <div class="preview-line"></div>
+                                <div class="preview-line short"></div>
+                            </div>
+                        </div>
+                        <span>Rose</span>
+                    </div>
+
+                    <div class="theme-option" id="theme-mocha">
+                        <div class="theme-preview theme-preview-mocha">
+                            <div class="preview-bar"></div>
+                            <div class="preview-content">
+                                <div class="preview-line"></div>
+                                <div class="preview-line short"></div>
+                            </div>
+                        </div>
+                        <span>Mocha</span>
+                    </div>
                 </div>
             </div>
         </div>
