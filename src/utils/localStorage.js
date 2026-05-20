@@ -1,29 +1,28 @@
+//                      MANEJO DE TOKENS
+// Fuente única de verdad para leer, guardar y limpiar tokens
+// en el localStorage. Prefijo "tm_" para evitar colisiones.
 
-// Consulta si el usuario está autenticado verificando la presencia de un token en el localStorage
+const ACCESS_KEY  = 'tm_accessToken';
+const REFRESH_KEY = 'tm_refreshToken';
 
-// Obtenemos el token de acceso del localStorage
-export const getAccessToken = () => {
-    const accessToken = localStorage.getItem('accessToken');
+/** Obtiene el access token almacenado */
+export const getAccessToken = () => localStorage.getItem(ACCESS_KEY);
 
-    return accessToken;
-}
+/** Obtiene el refresh token almacenado */
+export const getRefreshToken = () => localStorage.getItem(REFRESH_KEY);
 
-// Obtenemos el token de refresco del localStorage
-export const getRefreshToken = () => {
-    const refreshToken = localStorage.getItem('refreshToken');
-
-    return refreshToken;
-}
-
-// Definir tokens en el localStorage
-export const setTokens = (access, refresh) => {
-    localStorage.setItem('accessToken', access);
-
-    if (refresh) localStorage.setItem('refreshToken', refresh);
+/**
+ * Guarda los tokens en el localStorage.
+ * @param {string} access        - Nuevo access token
+ * @param {string|null} refresh  - Nuevo refresh token (null = no actualizar)
+ */
+export const setTokens = (access, refresh = null) => {
+    localStorage.setItem(ACCESS_KEY, access);
+    if (refresh) localStorage.setItem(REFRESH_KEY, refresh);
 };
 
-// Eliminar tokens del localStorage
+/** Elimina ambos tokens del localStorage */
 export const clearTokens = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
+    localStorage.removeItem(ACCESS_KEY);
+    localStorage.removeItem(REFRESH_KEY);
 };
