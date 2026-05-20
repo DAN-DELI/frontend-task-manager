@@ -1,0 +1,426 @@
+/* ============================================
+   style.css - Global
+   ============================================ */
+
+/* ---------- Variables ---------- */
+:root {
+    /* Colores base */
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-tertiary: #334155;
+
+    /* Texto */
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+
+    /* Acentos */
+    --accent: #3b82f6;
+    --accent-hover: #2563eb;
+    --danger: #ef4444;
+    --danger-hover: #dc2626;
+
+    /* Dimensiones */
+    --header-height: 64px;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+
+    /* Transiciones */
+    --transition: 0.2s ease;
+}
+
+/* ---------- Reset mínimo ---------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.5;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+
+.header {
+    background: var(--bg-secondary);
+    height: var(--header-height);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid var(--bg-tertiary);
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Brand */
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent);
+    border-radius: var(--radius-sm);
+    font-size: 18px;
+}
+
+.brand-title {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* Navegación */
+.nav-list {
+    display: flex;
+    list-style: none;
+    gap: 4px;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    transition: var(--transition);
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
+}
+
+/* Logout */
+.btn-logout {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border: 1px solid var(--danger);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--danger);
+    font-size: 14px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-logout:hover {
+    background: var(--danger);
+    color: var(--text-primary);
+}
+
+/* ============================================
+   AUTH / LOGIN
+   ============================================ */
+
+.auth-page {
+    min-height: calc(100vh - var(--header-height));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 400px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    padding: 40px;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.auth-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.auth-title {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.auth-subtitle {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+/* Formulario */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.input-group label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+.input-wrapper input {
+    width: 100%;
+    padding: 12px 14px;
+    background: var(--bg-primary);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 15px;
+    transition: var(--transition);
+}
+
+.input-wrapper input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.input-wrapper input::placeholder {
+    color: var(--text-muted);
+}
+
+/* Toggle password */
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px;
+}
+
+.toggle-password:hover {
+    color: var(--text-secondary);
+}
+
+/* Botón primario */
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-primary:hover {
+    background: var(--accent-hover);
+}
+
+/* Footer auth */
+.auth-footer {
+    margin-top: 24px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.auth-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.auth-link:hover {
+    color: var(--accent);
+}
+
+.auth-divider {
+    position: relative;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: calc(50% - 20px);
+    height: 1px;
+    background: var(--bg-tertiary);
+}
+
+.auth-divider::before {
+    left: 0;
+}
+
+.auth-divider::after {
+    right: 0;
+}
+
+.auth-text {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.btn-link {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.btn-link:hover {
+    text-decoration: underline;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+    .nav-text {
+        display: none;
+    }
+
+    .logout-text {
+        display: none;
+    }
+
+    .auth-card {
+        padding: 32px 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-container {
+        padding: 0 16px;
+    }
+
+    .brand-title {
+        font-size: 16px;
+    }
+
+    .auth-page {
+        padding: 16px;
+    }
+}
+
+/* ============================================
+   REGISTER - Solo ajustes específicos
+   ============================================ */
+
+/* El register usa las mismas clases que login (.auth-page, .auth-card, etc.)
+   Solo necesitamos ajustes menores para formularios más largos */
+
+.auth-form {
+    max-height: calc(100vh - 300px);
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+/* Scrollbar minimalista para formularios largos */
+.auth-form::-webkit-scrollbar {
+    width: 4px;
+}
+
+.auth-form::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.auth-form::-webkit-scrollbar-thumb {
+    background: var(--bg-tertiary);
+    border-radius: 2px;
+}
+
+/* Ajuste para móvil: reducir padding cuando hay muchos campos */
+@media (max-width: 480px) {
+    .auth-card {
+        padding: 24px 20px;
+    }
+
+    .auth-header {
+        margin-bottom: 20px;
+    }
+
+    .auth-icon {
+        font-size: 24px;
+    }
+
+    .auth-title {
+        font-size: 18px;
+    }
+}
+
+
+/* ==========================================================================
+   ESTILOS PARA MENSAJES DE ERROR DE VALIDACIÓN
+   ========================================================================== */
+.error-message {
+    color: #dc3545;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 0.25rem;
+    display: block;
+    min-height: 1.2rem;
+    transition: all 0.2s ease;
+}
+
+.auth-note {
+    font-size: 13px;
+    color: var(--text-secondary);
+    background: var(--bg-primary);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    margin-top: 8px;
+    line-height: 1.4;
+}
+
+.hidden {
+    display: none;
+}

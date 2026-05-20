@@ -31,15 +31,13 @@ export async function createTask(task) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(task)
     });
-    
-    const response = await res.json();
 
-    if (!response.success) {
-        const errorMsg = response.errors ? response.errors.join(", ") : response.message;
-        throw new Error(errorMsg || "Error al registrar tarea");
+    if (!res.ok) {
+        throw new Error(`Error del servidor: ${res.status}`);
     }
 
-    return response; 
+    const response = await res.json(); // Parsear respuesta
+    return response; // Retorna { success, message, data, errors }
 }
 
 /**
@@ -55,31 +53,31 @@ export async function updateTaskApi(id, updatedData) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedData)
     });
-    
-    const response = await res.json();
 
-    if (!response.success) {
-        throw new Error(response.message || "No se pudo actualizar la tarea");
+    if (!res.ok) {
+        throw new Error(`Error del servidor: ${res.status}`);
     }
-    return response.data; 
+
+    const response = await res.json(); // parsear JSON
+    return response; // Retorna { success, message, data, errors }
 }
 
 /**
  * Elimina una tarea por su ID.
  * @param {number|string} id - Identificador de la tarea
  * @returns {Promise<boolean>} true si se eliminó correctamente
- * @throws {Error} Si la respuesta HTTP no es OK
+ * @throws {Error} Si la respuesta HTTP no es OK o si success es false
  */
 export async function deleteTaskApi(id) {
     const res = await fetch(`http://localhost:3000/tasks/${id}`, {
         method: "DELETE"
     });
-    
+
+    if (!res.ok) {
+        throw new Error(`Error del servidor: ${res.status}`);
+    }
+
     const response = await res.json();
 
-    if (!response.success) {
-        throw new Error(response.message || "No se pudo eliminar la tarea");
-    }
-    
     return response;
 }

@@ -9,12 +9,12 @@
 
 import { getTasksByUser, orderFilter, saveTask } from "./services/tasksService.js";
 import { renderTasks, resetFiltersUI, tasksNull, updateMessageCounter } from "./ui/tasksUI.js";
-import { hideEmpty, hideUserUI, showAdminUI, showEmpty, showUserUI } from "./ui/uiState.js";
+import { hideEmpty, hideUserUI, showEmpty, showUserUI } from "./ui/uiState.js";
 import { showNotification } from "./ui/notificationsUI.js";
-import { generateTasksJSON } from "./services/exportService.js";
+import { generateTasksJSON } from "./utils/export.js";
 import { downloadJSONFile } from "./ui/exportUI.js";
 import { getCurrentTimestamp } from "./utils/helpers.js";
-import { userValidateForm } from "./services/userService.js";
+import { userValidateForm } from "./services/userPanel.service.js";
 
 const header = document.querySelector(".header");
 const loginWrapper = document.getElementById("login-wrapper");

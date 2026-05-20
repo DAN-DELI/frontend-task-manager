@@ -3,8 +3,37 @@
 // Contiene la lógica de filtrado y procesamiento de datos del admin
 // ---------------------------------------------------------------
 
-import { fetchUserByDocument } from "../api/usersApi.js";
-import { clearError, showError } from "../ui/uiState.js";
+import { fetchTasks } from "../api/tasksApi.js";
+import { fetchUserByDocument, fetchUsers } from "../api/usersApi.js";
+import { renderAdminTasksTable, renderAdminUsersTable } from "../ui/adminUI.js";
+import { clearError, innerHTML, showError, showMessage } from "../ui/uiState.js";
+
+/**
+ * Carga todos los datos iniciales del admin (tareas y usuarios).
+ */
+export async function loadAdminData(currentUser, allTasks, allUsers) {
+    try {
+        const nameDisplay = document.getElementById("userNameDisplay");
+        const emailDisplay = document.getElementById("userEmailDisplay");
+        const userRolDisplay = document.getElementById("userRolDisplay");
+        const adminTasksTableBody = document.getElementById("adminTasksTableBody");
+
+        // Mostrar estado de carga
+        innerHTML(adminTasksTableBody, `<tr><td colspan="6" class="table-empty">Cargando datos del sistema...</td></tr>`);
+
+        // Dibujar ambas tablas
+        renderAdminTasksTable(allTasks, allUsers);
+        renderAdminUsersTable(allUsers, allTasks);
+
+        showMessage(nameDisplay, currentUser.name);
+        showMessage(emailDisplay, currentUser.email);
+        showMessage(userRolDisplay, "Administrador");
+
+    } catch (error) {
+        console.error("Error cargando datos del admin:", error);
+        adminTasksTableBody.innerHTML = `<tr><td colspan="6" class="table-empty" style="color: red;">Error al cargar la base de datos.</td></tr>`;
+    }
+}
 
 /**
  * Aplica filtros de búsqueda y estado a una lista de tareas.

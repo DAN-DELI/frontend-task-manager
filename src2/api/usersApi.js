@@ -32,13 +32,15 @@ export async function fetchUserById(id) {
  * @returns {Promise<Object|null>} Objeto usuario o null si no existe
  */
 export async function fetchUserByDocument(document) {
+
     const res = await fetch(`http://localhost:3000/users?document=${document}`);
-    const response = await res.json();
-    
-    if (response.success && response.data && response.data.length > 0) {
-        return response.data[0];
+
+    if (res.status >= 500) {
+        throw new Error("Error del servidor al buscar usuario usuario");
     }
-    return null;
+
+    const response = await res.json();
+    return response; // retorna { success, message, data, errors }
 }
 
 /**
@@ -48,10 +50,12 @@ export async function fetchUserByDocument(document) {
 export async function fetchUsers() {
     const res = await fetch(`http://localhost:3000/users`);
     const response = await res.json();
+
     if (!response.success) {
         throw new Error(response.message || "Error al obtener usuarios");
     }
-    return response.data; 
+
+    return response.data;
 }
 
 
@@ -67,11 +71,13 @@ export async function deleteUserApi(id) {
     const res = await fetch(`http://localhost:3000/users/${id}`, {
         method: "DELETE"
     });
+
+    if (!res.ok) {
+        throw new Error(`Error del servidor: ${res.status}`);
+    };
+
     const response = await res.json();
-    if (!response.success) {
-        throw new Error(response.message || "Error al eliminar el usuario");
-    }
-    return response;
+    return response; // retorna { success, message, data, errors }
 }
 
 
@@ -86,16 +92,15 @@ export async function updateUserApi(id, userData) {
     const res = await fetch(`http://localhost:3000/users/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userData) 
+        body: JSON.stringify(userData)
     });
-    
-    const response = await res.json();
 
-    if (!response.success) {
-        throw new Error(response.message || "Error al actualizar el usuario");
+    if (!res.ok) {
+        throw new Error(`Error del servidor: ${res.status}`);
     }
 
-    return response; 
+    const response = await res.json(); // Parsear respuesta
+    return response; // retorna { success, message, data, errors }
 }
 
 // ---------------------------------------------------------------
@@ -111,13 +116,11 @@ export async function createUserApi(userData) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userData)
     });
-    
-    const response = await res.json();
 
-    if (!response.success) {
-        const errorMsg = response.errors ? response.errors.join(", ") : response.message;
-        throw new Error(errorMsg || "Error al crear el usuario");
+    if (!res.ok) {
+        throw new Error(`Error del servidor: ${res.status}`);
     }
 
-    return response;
+    const response = await res.json(); // Parsear respuesta
+    return response; // retorna { success, message, data, errors }
 }
