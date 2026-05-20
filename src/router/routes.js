@@ -9,7 +9,7 @@ import {
 } from "../modules/auth/index";
 
 import { rolesAndPermissionsView } from "../modules/rolesAndPermissions/index";
-import { settingsView } from "../modules/settings/index";
+import { settingsView, settingsInit } from "../modules/settings/index";
 import { tasksView, tasksInit } from "../modules/tasks/index";
 import { renderUsersList, renderCreateUser, renderEditUser } from "../modules/users/index";
 
@@ -52,7 +52,7 @@ export const routes = [
     {
         path: "#/tasks",
         view: () => tasksView(),
-        init: tasksInit(),
+        init: () => tasksInit(),
         private: true
     },
 
@@ -104,7 +104,7 @@ export const routes = [
     {
         path: "#/settings",
         view: () => settingsView(),
-        init: inProgressInit,
+        init: () => settingsInit(),  // registra todos los listeners
         private: true
     }
 ];
