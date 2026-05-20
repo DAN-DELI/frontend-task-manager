@@ -10,7 +10,7 @@ import {
 
 import { rolesAndPermissionsView } from "../modules/rolesAndPermissions/index";
 import { settingsView, settingsInit } from "../modules/settings/index";
-import { tasksView, tasksInit } from "../modules/tasks/index";
+import { tasksView} from "../modules/tasks/index";
 import { usersView } from "../modules/users/index";
 
 export const routes = [
@@ -53,7 +53,7 @@ export const routes = [
     {
         path: "#/tasks",
         view: () => tasksView(),
-        init: tasksInit,
+        init: inProgressInit,
         private: true
     },
 
