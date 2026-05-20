@@ -44,6 +44,9 @@ export const loginInit = () => {
 
             const { accessToken, refreshToken, user } = response.data;
 
+            // console.log(user);
+            
+
             // Guardar tokens usando la utilidad centralizada (claves tm_*)
             setTokens(accessToken, refreshToken);
 

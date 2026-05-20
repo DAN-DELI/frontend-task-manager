@@ -1,5 +1,33 @@
 import Swal from "sweetalert2";
 
+
+// ---------------------------------------------------------------
+//                          SHOW CONFIRMATION
+// ---------------------------------------------------------------
+/**
+ * Muestra un modal de confirmación con botones de acción.
+ * * @param {string} title - Título que aparece en la parte superior.
+ * @param {string} text - Descripción de la acción a confirmar.
+ * @returns {Promise<import('sweetalert2').SweetAlertResult>} Promesa con el resultado de la interacción (isConfirmed).
+ */
+export const showConfirmation = async (title, text) => {
+    return await Swal.fire({
+        title,
+        text,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar',
+        buttonsStyling: false,
+        customClass: {
+            popup: 'content-card',
+            confirmButton: 'btn-danger',
+            cancelButton: 'btn-secondary'
+        }
+    });
+};
+
+
 // ---------------------------------------------------------------
 //                          SHOW ALERT
 // ---------------------------------------------------------------
