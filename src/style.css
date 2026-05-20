@@ -1069,3 +1069,82 @@ TASKS - Vista de tareas
     color: #94a3b8;
     border: 1px solid rgba(100, 116, 139, 0.2);
 }
+
+/* ==========================================
+   ROLES CHECKBOX - INLINE EN FORMULARIO
+   ========================================== */
+
+.roles-checklist-inline {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.role-checkbox-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px;
+    background: var(--bg-primary);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+}
+
+.role-checkbox-item:hover {
+    border-color: var(--accent);
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.role-checkbox-input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.role-checkbox-checkmark {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    border: 2px solid var(--bg-tertiary);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    margin-top: 2px;
+}
+
+.role-checkbox-checkmark svg {
+    opacity: 0;
+    transform: scale(0.8);
+    transition: var(--transition);
+    color: white;
+}
+
+.role-checkbox-input:checked ~ .role-checkbox-checkmark {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+.role-checkbox-input:checked ~ .role-checkbox-checkmark svg {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.role-checkbox-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.role-checkbox-desc {
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.4;
+}

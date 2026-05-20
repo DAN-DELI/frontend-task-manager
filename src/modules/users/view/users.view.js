@@ -15,7 +15,7 @@ export const usersView = (canCreate = false) => {
                                 <th>Nombre</th>
                                 <th>Email</th>
                                 <th>Documento</th>
-                                <th>Rol</th>
+                                <th>Roles</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -30,6 +30,50 @@ export const usersView = (canCreate = false) => {
         </div>
     `;
 };
+
+// ─── Helper: HTML de los checkboxes de roles ───
+const rolesChecklistHTML = (contextId) => `
+<div class="roles-checklist-inline" id="roles-checklist-${contextId}">
+    <label class="role-checkbox-item">
+        <input type="checkbox" name="roleIds" value="1" class="role-checkbox-input">
+        <span class="role-checkbox-checkmark">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        </span>
+        <div class="role-checkbox-info">
+            <span class="role-badge role-administrador" style="margin-bottom: 4px; font-size: 11px;">Administrador</span>
+            <small class="role-checkbox-desc">Control total del sistema</small>
+        </div>
+    </label>
+
+    <label class="role-checkbox-item">
+        <input type="checkbox" name="roleIds" value="2" class="role-checkbox-input">
+        <span class="role-checkbox-checkmark">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        </span>
+        <div class="role-checkbox-info">
+            <span class="role-badge role-evaluador" style="margin-bottom: 4px; font-size: 11px;">Evaluador</span>
+            <small class="role-checkbox-desc">Revisa y evalúa tareas y usuarios</small>
+        </div>
+    </label>
+
+    <label class="role-checkbox-item">
+        <input type="checkbox" name="roleIds" value="3" class="role-checkbox-input">
+        <span class="role-checkbox-checkmark">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        </span>
+        <div class="role-checkbox-info">
+            <span class="role-badge role-aprendiz" style="margin-bottom: 4px; font-size: 11px;">Aprendiz</span>
+            <small class="role-checkbox-desc">Acceso básico como estudiante</small>
+        </div>
+    </label>
+</div>
+`;
 
 export const userCreateView = () => {
     return `
@@ -71,15 +115,8 @@ export const userCreateView = () => {
                     </div>
 
                     <div class="input-group" style="margin-bottom: 10px;">
-                        <label for="user-role">Rol del sistema</label>
-                        <div class="input-wrapper">
-                            <select id="user-role" name="roleId" required>
-                                <option value="" disabled selected>Seleccione un rol...</option>
-                                <option value="1">Administrador</option>
-                                <option value="2">Evaluador</option>
-                                <option value="3">Aprendiz</option>
-                            </select>
-                        </div>
+                        <label>Roles del sistema</label>
+                        ${rolesChecklistHTML('create')}
                     </div>
 
                     <button type="submit" class="btn-primary">Guardar Usuario</button>
@@ -123,14 +160,8 @@ export const userEditView = (user) => {
                     </div>
                     
                     <div class="input-group">
-                        <label for="edit-role">Rol en el sistema</label>
-                        <div class="input-wrapper">
-                            <select id="edit-role" name="roleId" required>
-                                <option value="1">Administrador</option>
-                                <option value="2">Evaluador</option>
-                                <option value="3">Aprendiz</option>
-                            </select>
-                        </div>
+                        <label>Roles en el sistema</label>
+                        ${rolesChecklistHTML('edit')}
                     </div>
 
                     <button type="submit" class="btn-primary" style="margin-top: 16px;">Guardar Cambios</button>

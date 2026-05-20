@@ -1,22 +1,65 @@
 import { usersView, userCreateView, userEditView } from '../view/users.view.js';
-import { fetchUsers, createUser, fetchUserById, updateUserPartial, deleteUser } from '../../../api/users.api.js'; 
+import { fetchUsers, createUser, fetchUserById, updateUserPartial, deleteUser, fetchUserRoles } from '../../../api/users.api.js'; 
 import { hasPermission } from '../../../utils/index.js';
 import { showAlert, showToast, showConfirmation } from '../../../utils/notification.js';
-// Helper para extraer el nombre del rol del usuario
-const getRoleName = (user) => {
-    if (user.role?.name) return user.role.name;
-    if (user.rol?.name) return user.rol.name;
-    if (user.role?.roleName) return user.role.roleName;
-    if (user.rol?.roleName) return user.rol.roleName;
-    // Mapa de IDs a nombres de rol como fallback
-    const roleMap = { 1: 'Administrador', 2: 'Evaluador', 3: 'Aprendiz' };
-    return roleMap[user.roleId] || roleMap[user.role] || roleMap[user.rol] || 'Sin rol';
+
+// ─── Roles disponibles ───
+const AVAILABLE_ROLES = [
+    { id: 1, name: 'Administrador' },
+    { id: 2, name: 'Evaluador' },
+    { id: 3, name: 'Aprendiz' }
+];
+
+const getRoleById = (id) => AVAILABLE_ROLES.find(r => r.id === Number(id));
+
+// ─── Helper: obtener IDs de checkboxes marcados ───
+const getSelectedRoleIds = (contextId) => {
+    const container = document.getElementById(`roles-checklist-${contextId}`);
+    if (!container) return [];
+    return Array.from(container.querySelectorAll('input[name="roleIds"]:checked'))
+        .map(cb => Number(cb.value));
 };
 
+// ─── Helper: marcar checkboxes según IDs ───
+const setSelectedRoles = (contextId, roleIds) => {
+    const container = document.getElementById(`roles-checklist-${contextId}`);
+    if (!container) return;
+    const ids = (Array.isArray(roleIds) ? roleIds : []).map(Number);
+    container.querySelectorAll('input[name="roleIds"]').forEach(cb => {
+        cb.checked = ids.includes(Number(cb.value));
+    });
+};
 
+// ─── Helper: renderizar celda de roles en tabla ───
+const renderUserRolesCell = (user) => {
+    let roles = [];
+    
+    if (user.roles && Array.isArray(user.roles)) {
+        roles = user.roles.map(r => {
+            if (typeof r === 'object') return r.name || r.roleName || getRoleById(r.id)?.name || 'Desconocido';
+            if (typeof r === 'string') return r;
+            if (typeof r === 'number') return getRoleById(r)?.name || 'Desconocido';
+            return 'Desconocido';
+        });
+    } else if (user.role?.name) {
+        roles = [user.role.name];
+    } else if (user.rol?.name) {
+        roles = [user.rol.name];
+    } else if (user.roleId) {
+        const role = getRoleById(user.roleId);
+        if (role) roles = [role.name];
+    }
+    
+    if (roles.length === 0) return '<span class="role-badge role-sin-rol">Sin rol</span>';
+    
+    return roles.map(name => {
+        const cssClass = `role-${name.toLowerCase().replace(/\s+/g, "-")}`;
+        return `<span class="role-badge ${cssClass}">${name}</span>`;
+    }).join(' ');
+};
 
 // ==========================================
-// CONTROLADOR DE LA LISTA DE USUARIOS
+// LISTA DE USUARIOS
 // ==========================================
 export const renderUsersList = async (container) => {
     if (!hasPermission('users.view')) {
@@ -54,14 +97,13 @@ export const renderUsersList = async (container) => {
                         <td>${user.name}</td>
                         <td>${user.email}</td>
                         <td>${user.document || 'N/A'}</td>
-                        <td><span class="role-badge role-${(getRoleName(user).toLowerCase().replace(/\s+/g, "-"))}">${getRoleName(user)}</span></td>
+                        <td>${renderUserRolesCell(user)}</td>
                         <td class="actions-cell">${actionButtons}</td>
                     </tr>
                 `;
             }).join('');
         }
 
-        // DELEGACIÓN DE EVENTOS EN LA TABLA
         tbody.addEventListener('click', async (e) => {
             if (e.target.classList.contains('btn-edit')) {
                 const id = e.target.getAttribute('data-id');
@@ -69,6 +111,7 @@ export const renderUsersList = async (container) => {
             }
 
             if (e.target.classList.contains('btn-delete')) {
+                const id = e.target.getAttribute('data-id');
                 const result = await showConfirmation(
                     '¿Estás seguro?', 
                     'Esta acción no se puede deshacer'
@@ -81,10 +124,10 @@ export const renderUsersList = async (container) => {
                             showToast('Usuario eliminado');
                             renderUsersList(container); 
                         } else {
-                            showAlert(res.message || 'Error al eliminar');
+                            showAlert('error', res.message || 'Error al eliminar', 'Error');
                         }
                     } catch (error) {
-                        alert('Error de red: ' + error.message);
+                        showAlert('error', 'Error de red: ' + error.message, 'Fallo de conexión');
                     }
                 }
             }
@@ -96,7 +139,7 @@ export const renderUsersList = async (container) => {
 };
 
 // ==========================================
-// CONTROLADOR DE CREACIÓN DE USUARIO
+// CREAR USUARIO
 // ==========================================
 export const renderCreateUser = (container) => {
     if (!hasPermission('users.create')) {
@@ -105,7 +148,10 @@ export const renderCreateUser = (container) => {
     }
 
     container.innerHTML = userCreateView();
-    document.getElementById('btn-back-users')?.addEventListener('click', () => { window.location.hash = '#/users'; });
+    
+    document.getElementById('btn-back-users')?.addEventListener('click', () => { 
+        window.location.hash = '#/users'; 
+    });
 
     const form = document.getElementById('create-user-form');
     form?.addEventListener('submit', async (e) => {
@@ -120,16 +166,15 @@ export const renderCreateUser = (container) => {
             document: form.document.value,
             email: form.email.value,
             password: form.password.value,
-            roleId: Number(form.roleId.value)
+            roleIds: getSelectedRoleIds('create')
         };
 
         try {
             const response = await createUser(userData);
             if (response.success) {
-                showToast('Usuario creado con éxito', 'success'); // <-- Toast de éxito
+                showToast('Usuario creado con éxito', 'success');
                 window.location.hash = '#/users'; 
             } else {
-                // Usamos showAlert en lugar de alert
                 showAlert('error', response.message || 'Error al guardar el usuario', 'Error de registro');
                 btnSubmit.textContent = originalBtnText;
                 btnSubmit.disabled = false;
@@ -143,7 +188,7 @@ export const renderCreateUser = (container) => {
 };
 
 // ==========================================
-// CONTROLADOR DE EDICIÓN DE USUARIO
+// EDITAR USUARIO
 // ==========================================
 export const renderEditUser = async (container, params) => {
     if (!hasPermission('users.update')) {
@@ -157,7 +202,7 @@ export const renderEditUser = async (container, params) => {
         return;
     }
 
-    container.innerHTML = `<div class="text-center">Cargando datos...</div>`;
+    container.innerHTML = `<div class="text-center" style="padding: 40px; color: var(--text-secondary);">Cargando datos...</div>`;
 
     try {
         const user = await fetchUserById(userId);
@@ -174,16 +219,26 @@ export const renderEditUser = async (container, params) => {
             window.location.hash = '#/users';
         });
 
-        const roleSelect = document.getElementById('edit-role');
-        if (roleSelect) {
-            const currentRoleId = userData.roleId || userData.role?.id || userData.rol?.id;
-            if (currentRoleId) roleSelect.value = currentRoleId;
+        // ─── Precargar roles actuales ───
+        let currentRoleIds = [];
+        if (userData.roles && Array.isArray(userData.roles)) {
+            currentRoleIds = userData.roles.map(r => Number(r.id || r));
+        } else if (userData.roleId) {
+            currentRoleIds = [Number(userData.roleId)];
+        } else {
+            try {
+                const rolesFromApi = await fetchUserRoles(userId);
+                currentRoleIds = rolesFromApi.map(r => Number(r.id || r.roleId || r));
+            } catch (e) {
+                console.warn('No se pudieron cargar los roles desde API', e);
+            }
         }
+        setSelectedRoles('edit', currentRoleIds);
 
         const form = document.getElementById('edit-user-form');
         if (form) {
             form.addEventListener('submit', async (e) => {
-                e.preventDefault(); // <-- ESTO EVITA QUE LA PÁGINA SE RECARGUE AL DAR CLICK EN GUARDAR
+                e.preventDefault();
                 
                 const btnSubmit = form.querySelector('button[type="submit"]');
                 const originalText = btnSubmit.textContent;
@@ -194,7 +249,7 @@ export const renderEditUser = async (container, params) => {
                     name: document.getElementById('edit-name').value.trim(),
                     document: document.getElementById('edit-document').value.trim(),
                     email: document.getElementById('edit-email').value.trim(),
-                    roleId: Number(document.getElementById('edit-role').value)
+                    roleIds: getSelectedRoleIds('edit')
                 };
 
                 try {
@@ -204,11 +259,13 @@ export const renderEditUser = async (container, params) => {
                         window.location.hash = '#/users';
                     } else {
                         showAlert('error', response.message || 'Error al actualizar', 'Error de edición');
-                        // ... restaurar botón
+                        btnSubmit.textContent = originalText;
+                        btnSubmit.disabled = false;
                     }
                 } catch (error) {
                     showAlert('error', 'Ocurrió un error inesperado al actualizar', 'Fallo del sistema');
-                    // ... restaurar botón
+                    btnSubmit.textContent = originalText;
+                    btnSubmit.disabled = false;
                 }
             });
         }
