@@ -2,6 +2,9 @@
 // API DE USUARIOS
 // ---------------------------------------------------------------
 
+import { API_URL, PORT } from "../../src/config/api.config";
+
+const url_base = `${API_URL}:${PORT}`
 
 // ---------------------------------------------------------------
 // ======================= OPERACIONES GET =======================
@@ -15,7 +18,7 @@
  * @returns {Promise<Object|null>} Objeto usuario o null si no existe
  */
 export async function fetchUserById(id) {
-    const res = await fetch(`http://localhost:3000/users/${id}`);
+    const res = await fetch(`${url_base}/users/${id}`);
     const response = await res.json();
 
     if (!response.success) {
@@ -33,7 +36,7 @@ export async function fetchUserById(id) {
  */
 export async function fetchUserByDocument(document) {
 
-    const res = await fetch(`http://localhost:3000/users?document=${document}`);
+    const res = await fetch(`${url_base}/users?document=${document}`);
 
     if (res.status >= 500) {
         throw new Error("Error del servidor al buscar usuario usuario");
@@ -48,7 +51,7 @@ export async function fetchUserByDocument(document) {
  * @returns {Promise<Array>} Lista completa de usuarios
  */
 export async function fetchUsers() {
-    const res = await fetch(`http://localhost:3000/users`);
+    const res = await fetch(`${url_base}/users`);
     const response = await res.json();
 
     if (!response.success) {
@@ -68,7 +71,7 @@ export async function fetchUsers() {
  * @param {number|string} id 
  */
 export async function deleteUserApi(id) {
-    const res = await fetch(`http://localhost:3000/users/${id}`, {
+    const res = await fetch(`${url_base}/users/${id}`, {
         method: "DELETE"
     });
 
@@ -89,7 +92,7 @@ export async function deleteUserApi(id) {
  * Actualiza los datos de un usuario (PATCH).
  */
 export async function updateUserApi(id, userData) {
-    const res = await fetch(`http://localhost:3000/users/${id}`, {
+    const res = await fetch(`${url_base}/users/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userData)
@@ -111,7 +114,7 @@ export async function updateUserApi(id, userData) {
  * @param {Object} userData 
  */
 export async function createUserApi(userData) {
-    const res = await fetch(`http://localhost:3000/users`, {
+    const res = await fetch(`${url_base}/users`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userData)

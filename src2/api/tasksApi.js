@@ -4,13 +4,16 @@
 // Funciones encapsuladas para comunicarse con el backend (json-server)
 // ---------------------------------------------------------------
 
+import { API_URL, PORT } from "../../src/config/api.config";
+
+const url_base = `${API_URL}:${PORT}`
 /**
  * Obtiene todas las tareas desde el endpoint `/tasks`.
  * @returns {Promise<Array>} Lista de tareas en formato JSON
  * @throws {Error} Si la respuesta HTTP no es OK
  */
 export async function fetchTasks() {
-    const res = await fetch(`http://localhost:3000/tasks`);
+    const res = await fetch(`${url_base}/tasks`);
     const response = await res.json(); // Estructura: { success, message, data, errors }
 
     if (!response.success) {
@@ -26,7 +29,7 @@ export async function fetchTasks() {
  * @throws {Error} Si la respuesta HTTP no es OK
  */
 export async function createTask(task) {
-    const res = await fetch("http://localhost:3000/tasks", {
+    const res = await fetch(`${url_base}/tasks`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(task)
@@ -48,7 +51,7 @@ export async function createTask(task) {
  * @throws {Error} Si la respuesta HTTP no es OK
  */
 export async function updateTaskApi(id, updatedData) {
-    const res = await fetch(`http://localhost:3000/tasks/${id}`, {
+    const res = await fetch(`${url_base}/tasks/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedData)
@@ -69,7 +72,7 @@ export async function updateTaskApi(id, updatedData) {
  * @throws {Error} Si la respuesta HTTP no es OK o si success es false
  */
 export async function deleteTaskApi(id) {
-    const res = await fetch(`http://localhost:3000/tasks/${id}`, {
+    const res = await fetch(`${url_base}/tasks/${id}`, {
         method: "DELETE"
     });
 
