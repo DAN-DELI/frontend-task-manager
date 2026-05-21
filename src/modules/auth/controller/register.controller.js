@@ -1,10 +1,12 @@
 import { register } from "../../../api/index.js";
-import { navigateTo, showToast } from "../../../utils/index.js";
+import { navigateTo, setupPasswordToggle, showToast } from "../../../utils/index.js";
 import { validatePasswordConfirmation, validateRegisterForm } from "../validation/register.validation.js";
 
 export const registerInit = () => {
 
-    // Selectores del DOM
+    // ========================================================
+    //                  SELECTORES DEL DOM
+    // ========================================================
     const form = document.querySelector('#register-form');
 
     const formName = document.querySelector('#fullname');
@@ -13,6 +15,17 @@ export const registerInit = () => {
     const formPassword = document.querySelector('#reg-password');
     const formConfirm = document.querySelector('#reg-password-confirm');
 
+
+    // ========================================================
+    //             EVENTO => ALTERNAR VISIVILIDAD
+    // ========================================================
+    setupPasswordToggle('toggle-reg-password', 'reg-password');
+    setupPasswordToggle('toggle-reg-password-confirm', 'reg-password-confirm');
+
+
+    // ========================================================
+    //            EVENTO => RESTABLECER CONTRASEÑA
+    // ========================================================
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
