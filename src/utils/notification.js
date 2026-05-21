@@ -71,3 +71,33 @@ export const showToast = (message, type, time = 3000) => {
         timerProgressBar: true
     });
 };
+
+// ---------------------------------------------------------------
+//                       SHOW CONFIRM ALERT
+// ---------------------------------------------------------------
+
+/**
+ * Muestra una alerta modal con boton de confirmacion.
+ * Ejecuta un callback cuando el usuario presiona OK.
+ * 
+ * @param {string} type - success | error | warning | info | question
+ * @param {string} message - Mensaje principal.
+ * @param {string} [title="Sistema"] - Titulo opcional.
+ * @param {string} [confirmText="Aceptar"] - Texto del boton.
+ * @param {Function} [onConfirm] - Funcion a ejecutar al confirmar.
+ */
+
+export const showConfirm = (type, message, title = "Sistema", confirmText = "Aceptar", onConfirm = null) => {
+    Swal.fire({
+        icon: type,
+        title,
+        text: message,
+        confirmButtonText: confirmText,
+        confirmButtonColor: "#2563eb",
+        allowOutsideClick: false
+    }).then((result) => {
+        if (result.isConfirmed && typeof onConfirm === "function") {
+            onConfirm();
+        }
+    });
+};
