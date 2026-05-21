@@ -1,8 +1,14 @@
 import { headerLayout } from "../layout/index";
+import { navigateTo } from "../utils";
 import { routes } from "./routes";
 
 // Renderizar header y sidebar principal
 const renderLayout = () => {
+
+    // Validar que el usuario este autenticado
+    if (localStorage.getItem('user') == null) {
+        navigateTo("#/login");
+    }
 
     // Seleccionar ubicacion del renderizado
     const container = document.querySelector("#app");
