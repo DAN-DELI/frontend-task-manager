@@ -5,7 +5,9 @@ import {
     loginInit,
     LoginView,
     registerInit,
-    RegisterView
+    RegisterView,
+    resetPasswordInit,
+    resetPasswordView
 } from "../modules/auth/index";
 
 import { rolesAndPermissionsView } from "../modules/rolesAndPermissions/index";
@@ -33,6 +35,12 @@ export const routes = [
         path: "#/forgot-password",
         view: () => ForgotPasswordView(),
         init: () => forgotPasswordInit(),
+        private: false
+    },
+    {
+        path: "#/reset-password/:token",
+        view: () => resetPasswordView(),
+        init: (token) => resetPasswordInit(token),
         private: false
     },
 
