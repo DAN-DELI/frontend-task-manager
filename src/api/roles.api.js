@@ -54,3 +54,26 @@ export const deleteRole = async (id) => {
         method: 'DELETE',
     });
 };
+
+/**
+ * Obtiene los permisos asignados a un rol.
+ * @param {number|string} id
+ * @returns {Promise<Array>} Lista de permisos del rol
+ */
+export const fetchRolePermissions = async (id) => {
+    const res = await apiClient(`/api/roles/${id}/permissions`);
+    return res?.data ?? res;
+};
+
+/**
+ * Sincroniza los permisos de un rol (reemplaza los existentes).
+ * @param {number|string} id
+ * @param {number[]} permissionIds
+ * @returns {Promise<Object>} Respuesta { success, message, data }
+ */
+export const assignRolePermissions = async (id, permissionIds) => {
+    return await apiClient(`/api/roles/${id}/permissions`, {
+        method: 'POST',
+        body: JSON.stringify({ permissionIds }),
+    });
+};
