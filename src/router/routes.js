@@ -10,7 +10,7 @@ import {
     resetPasswordView
 } from "../modules/auth/index";
 
-import { rolesAndPermissionsView } from "../modules/rolesAndPermissions/index";
+import { rolesListView, renderRolesList, renderCreateRole, renderEditRole} from "../modules/rolesAndPermissions/index";
 import { settingsView, settingsInit } from "../modules/settings/index";
 import { tasksView, tasksInit } from "../modules/tasks/index";
 import { renderUsersList, renderCreateUser, renderEditUser } from "../modules/users/index";
@@ -103,8 +103,32 @@ export const routes = [
     // HASH DE ROLES Y PERMISOS
     {
         path: "#/rolesAndPermissions",
-        view: () => rolesAndPermissionsView(),
-        init: inProgressInit,
+        view: () => `<div id="roles-view-container">Cargando...</div>`,
+        init: () => {
+            const container = document.querySelector("#roles-view-container");
+            if (container) renderRolesList(container);
+        },
+        private: true
+    },
+
+     // HASH CREAR ROL
+    {
+        path: "#/rolesAndPermissions/create",
+        view: () => `<div id="role-create-container">Cargando formulario...</div>`,
+        init: () => {
+            const container = document.querySelector("#role-create-container");
+            if (container) renderCreateRole(container);
+        },
+        private: true
+    },
+    // HASH EDITAR ROL
+    {
+        path: "#/rolesAndPermissions/edit/:id",
+        view: () => `<div id="role-edit-container">Cargando...</div>`,
+        init: (params) => {
+            const container = document.querySelector("#role-edit-container");
+            if (container && params) renderEditRole(container, params);
+        },
         private: true
     },
 
