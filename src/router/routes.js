@@ -1,4 +1,6 @@
-import { headerInit, headerLayout } from "../layout/index";
+// ========================================================
+//                      IMPORTACIONES
+// ========================================================
 import {
     forgotPasswordInit,
     ForgotPasswordView,
@@ -9,11 +11,17 @@ import {
     resetPasswordInit,
     resetPasswordView
 } from "../modules/auth/index";
+import { homeView } from "../modules/home/index";
 
 import { rolesAndPermissionsView } from "../modules/rolesAndPermissions/index";
 import { settingsView, settingsInit } from "../modules/settings/index";
 import { tasksView, tasksInit } from "../modules/tasks/index";
 import { renderUsersList, renderCreateUser, renderEditUser } from "../modules/users/index";
+
+
+// ========================================================
+//                          RUTAS
+// ========================================================
 
 export const routes = [
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -48,13 +56,15 @@ export const routes = [
     //                             PRIVADAS
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-    // NAVEGACION (HEADER BASE)
+
+    // HASH DE HOME
     {
-        path: "#/navigation",
-        view: () => headerLayout(),
-        init: () => headerInit(),
-        private: false
+        path: "#/home",
+        view: () => homeView(),
+        init: () => console.log("En vista #/home"),
+        private: true
     },
+
 
     // HASH DE TAREAS
     {

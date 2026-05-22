@@ -68,7 +68,7 @@ export const loginInit = () => {
             showToast('Inicio de sesión exitoso. Redirigiendo a tu zona de trabajo...', 'success', 2000);
 
             setTimeout(() => {
-                navigateTo('#/navigation');
+                navigateTo('#/home');
             }, 2000);
 
         } catch (error) {
