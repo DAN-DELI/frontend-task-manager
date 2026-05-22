@@ -1,91 +1,73 @@
-export const usersView = (canCreate = false) => {
+export const usersView = () => {
     return `
         <div class="dashboard-container">
             <header class="view-header">
                 <h1 class="view-title">Gestión de Usuarios</h1>
-                ${canCreate ? '<button id="btn-create-user" class="btn-primary" style="width: auto; padding: 10px 20px;">Crear Usuario</button>' : ''}
+                <button id="btn-create-user" class="btn-primary">Crear Usuario</button>
             </header>
-            
-            <div class="content-card">
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nombre</th>
-                                <th>Email</th>
-                                <th>Documento</th>
-                                <th>Roles</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="users-table-body">
-                            <tr>
-                                <td colspan="6" style="text-align: center; color: var(--text-muted);">Cargando usuarios...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+
+            <div class="users-list" id="users-list">
+                <!-- Los usuarios se inyectan aquí -->
             </div>
         </div>
     `;
 };
 
-// ─── Helper: HTML de los checkboxes de roles ───
-const rolesChecklistHTML = (contextId) => `
-<div class="roles-checklist-inline" id="roles-checklist-${contextId}">
-    <label class="role-checkbox-item">
-        <input type="checkbox" name="roleIds" value="1" class="role-checkbox-input">
-        <span class="role-checkbox-checkmark">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-        </span>
-        <div class="role-checkbox-info">
-            <span class="role-badge role-administrador" style="margin-bottom: 4px; font-size: 11px;">Administrador</span>
-            <small class="role-checkbox-desc">Control total del sistema</small>
-        </div>
-    </label>
+// ─── Helper: HTML de los checkboxes de roles (dinámico) ───
+const rolesChecklistHTML = (contextId, roles = []) => {
+    if (!roles.length) {
+        return `<p class="input-hint">Cargando roles...</p>`;
+    }
 
-    <label class="role-checkbox-item">
-        <input type="checkbox" name="roleIds" value="2" class="role-checkbox-input">
-        <span class="role-checkbox-checkmark">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-        </span>
-        <div class="role-checkbox-info">
-            <span class="role-badge role-evaluador" style="margin-bottom: 4px; font-size: 11px;">Evaluador</span>
-            <small class="role-checkbox-desc">Revisa y evalúa tareas y usuarios</small>
-        </div>
-    </label>
+    const roleClassMap = {
+        'administrador': 'role-administrador',
+        'evaluador': 'role-evaluador',
+        'aprendiz': 'role-aprendiz'
+    };
 
-    <label class="role-checkbox-item">
-        <input type="checkbox" name="roleIds" value="3" class="role-checkbox-input">
-        <span class="role-checkbox-checkmark">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="20 6 9 17 4 12"></polyline>
-            </svg>
-        </span>
-        <div class="role-checkbox-info">
-            <span class="role-badge role-aprendiz" style="margin-bottom: 4px; font-size: 11px;">Aprendiz</span>
-            <small class="role-checkbox-desc">Acceso básico como estudiante</small>
-        </div>
-    </label>
-</div>
-`;
+    const roleDescMap = {
+        'administrador': 'Control total del sistema',
+        'evaluador': 'Revisa y evalúa tareas y usuarios',
+        'aprendiz': 'Acceso básico como estudiante'
+    };
 
-export const userCreateView = () => {
+    const items = roles.map(role => {
+        const cssClass = roleClassMap[role.name?.toLowerCase()] || 'role-sin-rol';
+        const desc = role.description || roleDescMap[role.name?.toLowerCase()] || 'Rol del sistema';
+        return `
+        <label class="role-checkbox-item">
+            <input type="checkbox" name="roleIds" value="${role.id}" class="role-checkbox-input">
+            <span class="role-checkbox-checkmark">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </span>
+            <div class="role-checkbox-info">
+                <span class="role-badge ${cssClass}">${role.name}</span>
+                <small class="role-checkbox-desc">${desc}</small>
+            </div>
+        </label>
+        `;
+    }).join('');
+
+    return `
+    <div class="roles-checklist-inline" id="roles-checklist-${contextId}">
+        ${items}
+    </div>
+    `;
+};
+
+export const userCreateView = (roles = []) => {
     return `
         <div class="dashboard-container">
             <header class="view-header">
                 <h1 class="view-title">Crear Nuevo Usuario</h1>
                 <button id="btn-back-users" class="btn-secondary">Volver a la lista</button>
             </header>
-            
-            <div class="content-card" style="max-width: 500px; margin: 0 auto;">
+
+            <div class="content-card user-form-card">
                 <form id="create-user-form" class="auth-form">
-                    
+
                     <div class="input-group">
                         <label for="user-name">Nombre completo</label>
                         <div class="input-wrapper">
@@ -114,9 +96,17 @@ export const userCreateView = () => {
                         </div>
                     </div>
 
-                    <div class="input-group" style="margin-bottom: 10px;">
+                    <div class="input-group">
+                        <label for="user-confirm-password">Confirmar contraseña</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="user-confirm-password" name="confirmPassword" placeholder="Repita la contraseña" required>
+                        </div>
+                        <span class="error-message hidden" id="error-confirm-password"></span>
+                    </div>
+
+                    <div class="input-group roles-group">
                         <label>Roles del sistema</label>
-                        ${rolesChecklistHTML('create')}
+                        ${rolesChecklistHTML('create', roles)}
                     </div>
 
                     <button type="submit" class="btn-primary">Guardar Usuario</button>
@@ -126,45 +116,27 @@ export const userCreateView = () => {
     `;
 };
 
-export const userEditView = (user) => {
+export const userAssignRolesView = (user, roles = []) => {
     return `
         <div class="dashboard-container">
             <header class="view-header">
-                <h1 class="view-title">Editar Usuario</h1>
+                <h1 class="view-title">Asignar Roles</h1>
                 <button id="btn-back-users" class="btn-secondary">Volver a la lista</button>
             </header>
-            
-            <div class="content-card auth-card" style="max-width: 600px; margin: 0 auto;">
-                <form id="edit-user-form" class="auth-form">
-                    <input type="hidden" id="edit-user-id" value="${user.id}">
-                    
-                    <div class="input-group">
-                        <label for="edit-name">Nombre completo</label>
-                        <div class="input-wrapper">
-                            <input type="text" id="edit-name" name="name" value="${user.name || ''}" required>
-                        </div>
-                    </div>
 
-                    <div class="input-group">
-                        <label for="edit-document">Documento</label>
-                        <div class="input-wrapper">
-                            <input type="text" id="edit-document" name="document" value="${user.document || ''}" required>
-                        </div>
-                    </div>
+            <div class="content-card auth-card user-edit-card">
+                <h2 class="user-name-readonly">${user.name || 'Usuario'}</h2>
+                <p class="user-email-readonly">${user.email || ''}</p>
 
-                    <div class="input-group">
-                        <label for="edit-email">Correo Electrónico</label>
-                        <div class="input-wrapper">
-                            <input type="email" id="edit-email" name="email" value="${user.email || ''}" required>
-                        </div>
-                    </div>
-                    
+                <form id="assign-roles-form" class="auth-form">
+                    <input type="hidden" id="assign-user-id" value="${user.id}">
+
                     <div class="input-group">
                         <label>Roles en el sistema</label>
-                        ${rolesChecklistHTML('edit')}
+                        ${rolesChecklistHTML('assign', roles)}
                     </div>
 
-                    <button type="submit" class="btn-primary" style="margin-top: 16px;">Guardar Cambios</button>
+                    <button type="submit" class="btn-primary mt-16">Guardar Cambios</button>
                 </form>
             </div>
         </div>

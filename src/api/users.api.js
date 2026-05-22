@@ -29,14 +29,10 @@ export async function fetchUsers() {
  * @returns {Promise<Object|null>} Objeto usuario o null si no existe
  * @throws {Error} Si hay error de servidor (distinto a 404)
  */
-export async function fetchUserById(id) {
-    console.log(`📡 Solicitando datos del usuario ID: ${id}`);
-    
+export async function fetchUserById(id) {    
     // Si tienes problemas de 404, prueba quitando el '/api' de la siguiente línea
     const res = await apiFetch(`/api/users/${id}`); 
     const response = await res.json();
-
-    console.log("📥 Respuesta del backend para fetchUserById:", response);
 
     if (!response.success) {
         console.warn("⚠️ El backend retornó success: false", response);
@@ -173,4 +169,35 @@ export async function deleteUser(id) {
 
     const response = await res.json();
     return response;
+}
+
+// OPERACIONES DE ASIGNACIÓN DE ROLES
+
+/**
+ * Asigna roles a un usuario.
+ * @param {number|string} userId - ID del usuario
+ * @param {Array<number>} roleIds - Array de IDs de roles a asignar
+ * @returns {Promise<Object>} Respuesta completa { success, message, data, errors }
+ * @throws {Error} Si hay error de servidor
+ */
+export async function assignUserRoles(userId, roleIds) {
+    // El backend espera strings, no numbers (validación Zod)
+    const payload = {
+        userId: String(userId),
+        roleIds: Array.isArray(roleIds) ? roleIds.map(String) : []
+    };
+
+    const res = await apiFetch('/api/userRoles/assign', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+        const errorText = await res.text();
+        console.error('[assignUserRoles] Error:', res.status, errorText);
+        try { return JSON.parse(errorText); }
+        catch { return { success: false, message: errorText || `Error ${res.status}` }; }
+    }
+
+    return await res.json();
 }
