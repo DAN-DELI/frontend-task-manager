@@ -1,6 +1,8 @@
 import Swal from 'sweetalert2';
 import { fetchTasks, createTask, updateTaskPartial, deleteTask } from '../../../api/index.js';
 import { showToast } from '../../../utils/index.js';
+import { hasPermission } from '../../../utils/auth.utils.js';
+import { taskCardHTML } from '../view/tasks.view.js';
 
 // ---------------------------------------------------------------
 //                          ESTADO LOCAL
@@ -18,78 +20,6 @@ const getCurrentUser = () => {
     } catch {
         return null;
     }
-};
-
-const formatDate = (isoString) => {
-    if (!isoString) return '—';
-    return new Date(isoString).toLocaleDateString('es-ES', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric'
-    });
-};
-
-const getStatusBadge = (status) => {
-    const map = {
-        'pendiente':   { cls: 'badge-pending',     label: 'Pendiente' },
-        'en-progreso': { cls: 'badge-in-progress',  label: 'En progreso' },
-        'completada':  { cls: 'badge-completed',    label: 'Completada' }
-    };
-    return map[status] ?? { cls: 'badge-pending', label: status };
-};
-
-const taskCardHTML = (task) => {
-    const { cls, label } = getStatusBadge(task.status);
-    const desc = task.description
-        ? (task.description.length > 120 ? task.description.slice(0, 120) + '...' : task.description)
-        : '';
-
-    return `
-        <article class="task-card" data-id="${task.id}">
-            <div class="task-card-header">
-                <span class="task-badge ${cls}">${label}</span>
-                <div class="task-card-actions">
-                    <button class="task-btn-edit" data-id="${task.id}" title="Editar tarea" aria-label="Editar tarea">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                        </svg>
-                    </button>
-                    <button class="task-btn-delete" data-id="${task.id}" title="Eliminar tarea" aria-label="Eliminar tarea">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="3 6 5 6 21 6"></polyline>
-                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
-                            <path d="M10 11v6"></path>
-                            <path d="M14 11v6"></path>
-                            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            <h3 class="task-card-title">${task.title}</h3>
-            <p class="task-card-desc">${desc}</p>
-
-            <div class="task-card-footer">
-                <span class="task-card-date">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                        <line x1="16" y1="2" x2="16" y2="6"></line>
-                        <line x1="8" y1="2" x2="8" y2="6"></line>
-                        <line x1="3" y1="10" x2="21" y2="10"></line>
-                    </svg>
-                    ${formatDate(task.created_at)}
-                </span>
-                <span class="task-card-user">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
-                    Usuario #${task.user_id ?? '—'}
-                </span>
-            </div>
-        </article>
-    `;
 };
 
 // ---------------------------------------------------------------
@@ -117,7 +47,9 @@ const renderTasks = () => {
         return;
     }
 
-    container.innerHTML = filtered.map(taskCardHTML).join('');
+    const canUpdate = hasPermission('tasks.update');
+    const canDelete = hasPermission('tasks.delete');
+    container.innerHTML = filtered.map(t => taskCardHTML(t, canUpdate, canDelete)).join('');
     bindCardEvents();
 };
 
@@ -346,13 +278,18 @@ const bindCardEvents = () => {
 // ---------------------------------------------------------------
 //                       INIT PRINCIPAL
 // ---------------------------------------------------------------
-
 export const tasksInit = () => {
 
     loadTasks();
 
-    document.querySelector('#btn-new-task')
-        ?.addEventListener('click', () => openModal());
+    const btnNewTask = document.querySelector('#btn-new-task');
+    if (btnNewTask) {
+        if (!hasPermission('tasks.create')) {
+            btnNewTask.style.display = 'none';
+        } else {
+            btnNewTask.addEventListener('click', () => openModal());
+        }
+    }
 
     document.querySelector('#modal-close')
         ?.addEventListener('click', closeModal);
