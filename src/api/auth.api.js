@@ -76,3 +76,24 @@ export async function register(userData) {
     const response = await res.json();
     return response;
 };
+
+// ---------------------------------------------------------------
+//                        RESET PASSWORD
+// ---------------------------------------------------------------
+// Funcion para resetear la contraseña
+export async function resetPassword(token, newPassword) {
+    const baseUrl = `${API_URL}:${PORT}`;
+
+    const res = await fetch(`${baseUrl}/api/auth/reset-password`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token, newPassword })
+    });
+
+    const response = await res.json();
+
+    console.log(response)
+    return response
+}

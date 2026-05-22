@@ -1,5 +1,5 @@
 import { login } from "../../../api/index.js";
-import { navigateTo, showToast, setTokens } from "../../../utils/index.js";
+import { navigateTo, showToast, setTokens, setupPasswordToggle } from "../../../utils/index.js";
 import { validateLoginForm } from "../validation/login.validation.js";
 
 export const loginInit = () => {
@@ -7,13 +7,21 @@ export const loginInit = () => {
     // ========================================================
     //                  SELECTORES DEL DOM
     // ========================================================
-    const form        = document.querySelector('#login-form');
+    const form = document.querySelector('#login-form');
     const formDocument = document.querySelector('#documento');
     const formPassword = document.querySelector('#password');
-    const btnSubmit   = form.querySelector('.btn-primary');
+    const btnSubmit = form.querySelector('.btn-primary');
+
+
 
     // ========================================================
-    //                       EVENTOS
+    //             EVENTO => ALTERNAR VISIVILIDAD
+    // ========================================================
+    setupPasswordToggle("toggle-password", "password");
+
+
+    // ========================================================
+    //              EVENTO => INICIAR SECION
     // ========================================================
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -24,7 +32,8 @@ export const loginInit = () => {
         const isValid = validateLoginForm();
         if (!isValid) return;
 
-        btnSubmit.disabled    = true;
+        // Bloquear botón al iniciar el proceso
+        btnSubmit.disabled = true;
         btnSubmit.textContent = 'Ingresando...';
 
         try {
@@ -35,17 +44,18 @@ export const loginInit = () => {
 
             const response = await login(userData);
 
+            // Error de autenticación (backend respondió pero credenciales mal)
             if (!response.success) {
                 const msg = response.message || 'Credenciales inválidas o no autorizadas';
                 showToast(msg, 'error');
-                console.error('Error de autenticación:', response);
+
+                // Restaurar botón para permitir reintentar
+                btnSubmit.disabled = false;
+                btnSubmit.textContent = 'Entrar';
                 return;
             }
 
             const { accessToken, refreshToken, user } = response.data;
-
-            // console.log(user);
-            
 
             // Guardar tokens usando la utilidad centralizada (claves tm_*)
             setTokens(accessToken, refreshToken);
@@ -53,7 +63,9 @@ export const loginInit = () => {
             // Guardar datos del usuario
             localStorage.setItem('user', JSON.stringify(user));
 
-            showToast('Inicio de sesión exitoso. Redirigiendo a tu zona de trabajo...', 'success');
+            // Éxito: mantener botón bloqueado con texto de redirección
+            btnSubmit.textContent = 'Redirigiendo...';
+            showToast('Inicio de sesión exitoso. Redirigiendo a tu zona de trabajo...', 'success', 2000);
 
             setTimeout(() => {
                 navigateTo('#/navigation');
@@ -61,9 +73,10 @@ export const loginInit = () => {
 
         } catch (error) {
             console.error('Error crítico de conexión:', error);
+            showToast('Error de conexión con el servidor. Intenta de nuevo.', 'error');
 
-        } finally {
-            btnSubmit.disabled    = false;
+            // Restaurar botón ante fallo de red
+            btnSubmit.disabled = false;
             btnSubmit.textContent = 'Entrar';
         }
     });
