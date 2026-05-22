@@ -7,6 +7,7 @@
 // consultarlas para el armado dinámico de la interfaz (ej. menús o vistas).
 
 import { apiFetch } from '../utils/auth.utils';
+import { apiClient } from './apiClient.js';
 
 /**
  * Obtiene el catálogo completo de permisos disponibles en el sistema.
@@ -18,3 +19,12 @@ export async function getAllPermissions() {
 
     return data;
 }
+
+/**
+ * Obtiene todos los permisos del sistema.
+ * @returns {Promise<Array>} Lista de permisos { id, code, name, description }
+ */
+export const fetchPermissions = async () => {
+    const res = await apiClient('/api/permissions');
+    return res?.data ?? res;
+};
