@@ -867,7 +867,7 @@ TASKS - Vista de tareas
     margin-top: 4px;
 }
 
-.btn-secondary {
+.modal .btn-secondary {
     padding: 10px 20px;
     border-radius: var(--radius-sm);
     border: 1px solid var(--bg-tertiary);
@@ -879,7 +879,7 @@ TASKS - Vista de tareas
     font-weight: 500;
 }
 
-.btn-secondary:hover {
+.modal .btn-secondary:hover {
     background: var(--bg-tertiary);
     color: var(--text-primary);
 }
@@ -1015,10 +1015,9 @@ TASKS - Vista de tareas
     text-align: left;
 }
 
-.data-table th,
-.data-table td {
-    padding: 16px;
-    border-bottom: 1px solid var(--bg-tertiary);
+/* ─── Headers ─── */
+.data-table thead {
+    display: table-header-group;
 }
 
 .data-table th {
@@ -1027,21 +1026,82 @@ TASKS - Vista de tareas
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--bg-tertiary);
+    text-align: left;
+    vertical-align: middle;
+    white-space: nowrap;
 }
 
+/* ─── Celdas ─── */
 .data-table td {
     font-size: 14px;
     color: var(--text-primary);
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--bg-tertiary);
+    vertical-align: middle;
+    line-height: 1.4;
 }
 
-.data-table tr:hover td {
+/* ─── FIX CRÍTICO: Todas las celdas de una fila misma altura ─── */
+.data-table tbody tr {
+    height: 52px; /* Altura fija para TODA la fila */
+}
+
+.data-table tbody tr td {
+    height: 52px;
+    padding-top: 0;
+    padding-bottom: 0;
+    box-sizing: border-box;
+}
+
+/* ─── Hover en filas ─── */
+.data-table tbody tr:hover td {
     background: var(--bg-tertiary);
-    /* Efecto hover en las filas */
 }
 
+/* ─── Badges de roles: nunca apilarse verticalmente ─── */
+.data-table td:nth-child(5) {
+    white-space: nowrap;
+}
+
+.data-table td:nth-child(5) .role-badge {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+    margin: 0 2px;
+    font-size: 11px;
+    padding: 3px 10px;
+    line-height: 1;
+}
+
+/* ─── Botones de acciones: una sola línea ─── */
 .actions-cell {
     display: flex;
+    align-items: center;
     gap: 8px;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+}
+
+.actions-cell .btn-secondary,
+.actions-cell .btn-danger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    padding: 0 14px;
+    line-height: 1;
+    font-size: 13px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* ─── Mensaje de carga centrado ─── */
+.table-loading-msg {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 40px 16px;
 }
 
 /* ============================================
@@ -1703,6 +1763,231 @@ body.theme-mocha {
     background: #2a1e18;
 }
 
+/* ============================================
+    VISTA DE USUARIOS (USERS VIEW SPECIFIC)
+   ============================================ */
+
+/* Botón de crear usuario */
+#btn-create-user {
+    width: auto;
+    padding: 10px 20px;
+}
+
+/* Mensaje de carga en la tabla */
+.table-loading-msg {
+    text-align: center;
+    color: var(--text-muted);
+}
+
+/* Badges de roles en los checkboxes */
+.role-checkbox-info .role-badge {
+    margin-bottom: 4px;
+    font-size: 11px;
+}
+
+/* Tarjeta de formulario de creación */
+.user-form-card {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* Tarjeta de formulario de edición */
+.user-edit-card {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Margen para el grupo de roles */
+.roles-group {
+    margin-bottom: 10px;
+}
+
+/* Clases de utilidad */
+.mt-16 {
+    margin-top: 16px;
+}
+/* Contenedor flexible para los botones de la tabla */
+.table-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Espacio uniforme entre los botones */
+}
+
+/* ============================================
+    VISTA DE USUARIOS - TARJETAS
+   ============================================ */
+
+.users-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.user-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.user-card:hover {
+    border-color: rgba(59, 130, 246, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* ─── Sección principal: avatar + nombre ─── */
+.user-card-main {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 240px;
+    flex: 1;
+}
+
+.user-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    flex-shrink: 0;
+}
+
+.user-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 4px 0;
+}
+
+.user-email {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* ─── Metadatos: ID, Documento, Roles ─── */
+.user-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    flex: 1;
+}
+
+.user-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.meta-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+.meta-value {
+    font-size: 14px;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.roles-container {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+/* ─── Acciones ─── */
+.user-card-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.btn-user-action {
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    border: none;
+}
+
+.btn-user-action.btn-edit {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.btn-user-action.btn-edit:hover {
+    background: var(--text-muted);
+}
+
+.btn-user-action.btn-delete {
+    background: var(--danger);
+    color: white;
+}
+
+.btn-user-action.btn-delete:hover {
+    background: var(--danger-hover);
+}
+
+/* ─── Estado vacío ─── */
+.users-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 24px;
+    color: var(--text-muted);
+    gap: 16px;
+}
+
+.users-empty svg {
+    opacity: 0.3;
+}
+
+.users-empty p {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 900px) {
+    .user-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    
+    .user-card-meta {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 600px) {
+    .user-card-meta {
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+    
+    .user-meta-item {
+        flex: 1;
+        min-width: 100px;
+    }
 /*
     ROLES Y PERMISOS
 */

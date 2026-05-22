@@ -13,7 +13,7 @@ import {
 import { rolesListView, renderRolesList, renderCreateRole, renderEditRole} from "../modules/rolesAndPermissions/index";
 import { settingsView, settingsInit } from "../modules/settings/index";
 import { tasksView, tasksInit } from "../modules/tasks/index";
-import { renderUsersList, renderCreateUser, renderEditUser } from "../modules/users/index";
+import { renderUsersList, renderCreateUser, renderAssignRoles } from "../modules/users/index";
 
 export const routes = [
     // -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -68,7 +68,7 @@ export const routes = [
     {
         path: "#/users",
         // 2. Devolvemos un div contenedor donde el controlador inyectará la vista
-        view: () => `<div id="users-view-container">Cargando permisos de usuario...</div>`,
+        view: () => `<div id="users-view-container">Cargando usuarios...</div>`,
         // 3. El init busca ese contenedor y llama a renderUsersList
         init: () => {
             const container = document.querySelector("#users-view-container");
@@ -88,14 +88,13 @@ export const routes = [
         },
         private: true
     },
-    // --- HASH DE EDICIÓN DE USUARIOS ---
+    // --- HASH DE ASIGNACIÓN DE ROLES ---
     {
-        path: "#/users/edit/:id",
-        view: () => `<div id="user-edit-container">Cargando formulario de edición...</div>`,
-        // Recibimos los 'params' que inyecta tu router.js
+        path: "#/users/:id/assign-roles",
+        view: () => `<div id="user-assign-roles-container">Cargando asignación de roles...</div>`,
         init: (params) => {
-            const container = document.querySelector("#user-edit-container");
-            if (container && params) renderEditUser(container, params);
+            const container = document.querySelector("#user-assign-roles-container");
+            if (container && params) renderAssignRoles(container, params);
         },
         private: true
     },
