@@ -1938,8 +1938,9 @@ body.theme-mocha {
 
     .home-card {
         padding: 24px;
-    VISTA DE USUARIOS (USERS VIEW SPECIFIC)
-   ============================================ */
+    }    
+    /*VISTA DE USUARIOS (USERS VIEW SPECIFIC)*/
+}
 
 /* Botón de crear usuario */
 #btn-create-user {
@@ -2162,6 +2163,9 @@ body.theme-mocha {
         flex: 1;
         min-width: 100px;
     }
+}
+
+
 /*
     ROLES Y PERMISOS
 */
