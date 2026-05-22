@@ -1764,6 +1764,180 @@ body.theme-mocha {
 }
 
 /* ============================================
+    HOME / BIENVENIDA
+   ============================================ */
+
+.home-section {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 36px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.home-section>h2 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+}
+
+.home-block>h3 {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+}
+
+/* ---------- Card principal (sin permisos) ---------- */
+.home-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    padding: 32px;
+    max-width: 560px;
+    margin: 0 auto;
+}
+
+.home-card h2 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.home-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    margin-bottom: 12px;
+}
+
+.home-text:last-of-type {
+    margin-bottom: 20px;
+}
+
+.home-actions {
+    margin-top: 8px;
+}
+
+/* ---------- Lista de permisos ---------- */
+.perm-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.perm-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px 16px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: var(--radius-sm);
+    transition: border-color var(--transition);
+}
+
+.perm-item:hover {
+    border-color: var(--accent);
+}
+
+.perm-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.perm-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* ---------- Grid de módulos (cards) ---------- */
+.home-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.home-grid .home-card {
+    padding: 24px;
+    max-width: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+}
+
+.home-grid .home-card:hover {
+    border-color: rgba(59, 130, 246, 0.4);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    transform: translateY(-2px);
+}
+
+.home-grid .home-card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--text-primary);
+}
+
+.home-grid .home-card p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    flex: 1;
+    margin: 0;
+}
+
+.home-grid .home-card .btn {
+    align-self: flex-start;
+    margin-top: 8px;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--accent);
+    background: transparent;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+}
+
+.home-grid .home-card .btn:hover {
+    background: var(--accent);
+    color: white;
+}
+
+/* ---------- Botón primario (card sin permisos) ---------- */
+.home-actions .btn-primary {
+    width: auto;
+    padding: 10px 20px;
+    display: inline-flex;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+    .home-section {
+        padding: 24px 16px;
+    }
+
+    .home-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .home-card {
+        padding: 24px;
     VISTA DE USUARIOS (USERS VIEW SPECIFIC)
    ============================================ */
 

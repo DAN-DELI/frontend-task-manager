@@ -1,114 +1,125 @@
-import { headerLayout } from "../layout/index";
-import { navigateTo } from "../utils";
-import { routes } from "./routes";
+import { generateNavItems } from "../layout/index.js";
+import { headerLayout } from "../layout/index.js";
+import { headerInit } from "../layout/index.js";
+import { navigateTo } from "../utils/index.js";
+import { routes } from "./routes.js";
 
-// Renderizar header y sidebar principal
-const renderLayout = () => {
-
-    // Validar que el usuario este autenticado
-    if (localStorage.getItem('user') == null) {
+// ========================================================
+//   MONTAR LAYOUT SI NO EXISTE (solo rutas privadas)
+// ========================================================
+const ensureLayout = () => {
+    // Sin sesión -> login
+    if (!localStorage.getItem('user')) {
         navigateTo("#/login");
+        return false;
     }
 
-    // Seleccionar ubicacion del renderizado
-    const container = document.querySelector("#app");
+    // Si ya está montado, no lo tocamos
+    if (document.querySelector("#main-content")) return true;
 
-    const headerPath = routes.find(r => r.path === "#/navigation");
+    // Primera vez: inyectar header + main-content
+    const app = document.querySelector("#app");
+    const navItems = generateNavItems();
+    app.innerHTML = headerLayout(navItems);
+    headerInit();
 
-    container.innerHTML = headerPath.view();
-
-    headerPath.init();
-
+    return true;
 };
 
-
+// ========================================================
+//                 PARÁMETROS DINÁMICOS
+// ========================================================
 const extractRouteParams = (routePath, path) => {
     const routeSegments = routePath.split('/');
     const pathSegments = path.split('/');
-    const params = {}
-    // Validamos que tengan el mismo tamaño, caso contrario se descarta
+    const params = {};
+
     if (routeSegments.length !== pathSegments.length) {
         return null;
     }
+
     for (let i = 0; i < routeSegments.length; i++) {
         const routeSegment = routeSegments[i];
         const pathSegment = pathSegments[i];
-        // Validamos si el segmento de la ruta es dinamico 
+
         if (routeSegment.startsWith(':')) {
-            // Le quitamos el primer caracter
-            const paramKey = routeSegment.substring(1);
-            params[paramKey] = pathSegment;
+            params[routeSegment.substring(1)] = pathSegment;
         } else if (routeSegment !== pathSegment) {
             return null;
         }
     }
-    return params
-}
+    return params;
+};
 
-
+// ========================================================
+//                 BUSCAR RUTA
+// ========================================================
 const findRoute = (path) => {
-
     for (const route of routes) {
-        const params = extractRouteParams(route.path, path)
+        const params = extractRouteParams(route.path, path);
         if (params != null) {
-            return { route, params }
+            return { route, params };
         }
     }
+    return { route: null, params: {} };
+};
 
-    let route = routes.find(r => r.path === path);
-    // Retornamos la coincidencia
-    return {
-        route,
-        params: {}
-    };
-}
-
-
-const render = () => {
-
+// ========================================================
+//                 RENDER (SOPORTA ASINCRONIA)
+// ========================================================
+const render = async () => {
     const path = window.location.hash || "#/login";
+    const { route, params } = findRoute(path);
 
-    let { route, params } = findRoute(path);
-
+    // 404
     if (!route) {
+        const container = document.querySelector("#app");
+        container.innerHTML = `
+            <section class="home-section">
+                <h2>404</h2>
+                <p>Ruta no encontrada.</p>
+                <a href="#/home" class="btn">Volver al inicio</a>
+            </section>
+        `;
         return;
     }
 
     // ---------------------------------------------------
     // RUTAS PRIVADAS
     // ---------------------------------------------------
-
     if (route.private) {
+        const ready = ensureLayout();
+        if (!ready) return; // Fue redirigido a login
 
-        // Si el layout no está renderizado, lo renderizamos
-        if (!document.querySelector("#main-content")) {
-
-            renderLayout();
-        };
-
-        // Renderizamos dentro del content
         const container = document.querySelector("#main-content");
 
-        container.innerHTML = route.view();
+        // Soporte para vistas sync y async
+        const viewResult = route.view();
+        container.innerHTML = viewResult instanceof Promise ? await viewResult : viewResult;
 
+        if (route.init) route.init(params);
+        return;
     }
 
     // ---------------------------------------------------
-    // RUTAS PUBLICAS
+    // RUTAS PÚBLICAS
     // ---------------------------------------------------
+    const container = document.querySelector("#app");
 
-    else {
-
-        const container = document.querySelector("#app");
-
-        container.innerHTML = route.view();
-
+    // Si veníamos de una privada, limpiar el layout anterior
+    if (document.querySelector(".header")) {
+        container.innerHTML = '';
     }
 
-    route.init(params);
+    const viewResult = route.view();
+    container.innerHTML = viewResult instanceof Promise ? await viewResult : viewResult;
 
+    if (route.init) route.init(params);
 };
 
+// ========================================================
+//                       initRouter
+// ========================================================
 export const initRouter = () => {
-    render()
+    render();
 };
