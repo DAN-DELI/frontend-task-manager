@@ -76,6 +76,15 @@ export const routes = [
         permission: 'tasks.view'
     },
 
+    // HASH DE CREAR TAREA
+    {
+        path: "#/tasks/create",
+        view: () => tasksView(hasPermission('tasks.create')),
+        init: (params) => tasksInit(params),
+        private: true,
+        permission: 'tasks.create'
+    },
+
     // HASH DE EDITAR TAREA
     {
         path: "#/tasks/:id/edit",
@@ -97,7 +106,9 @@ export const routes = [
                 renderUsersList(container);
             }
         },
-        private: true
+        private: true,
+        permission: 'users.view'
+        
     },
     // HASH DE CREACIÓN DE USUARIOS
     {
@@ -108,7 +119,8 @@ export const routes = [
             const container = document.querySelector("#user-create-container");
             if (container) renderCreateUser(container);
         },
-        private: true
+        private: true,
+        permission: 'users.create'
     },
     // --- HASH DE ASIGNACIÓN DE ROLES ---
     {
@@ -119,7 +131,8 @@ export const routes = [
             const container = document.querySelector("#user-assign-roles-container");
             if (container && params) renderAssignRoles(container, params);
         },
-        private: true
+        private: true,
+        permission: 'user-roles.assign'
     },
 
     // HASH DE ROLES Y PERMISOS
@@ -130,7 +143,8 @@ export const routes = [
             const container = document.querySelector("#roles-view-container");
             if (container) renderRolesList(container);
         },
-        private: true
+        private: true,
+        permission: 'roles.view'
     },
 
     // HASH CREAR ROL
@@ -141,7 +155,8 @@ export const routes = [
             const container = document.querySelector("#role-create-container");
             if (container) renderCreateRole(container);
         },
-        private: true
+        private: true,
+        permission: 'roles.create'
     },
     // HASH VISUALIZAR ROL
     {
@@ -158,7 +173,8 @@ export const routes = [
             const container = document.querySelector("#role-edit-container");
             if (container && params) renderEditRole(container, params);
         },
-        private: true
+        private: true,
+        permission: 'roles.update'
     },
 
     // HASH DE CONFIGURACIONES
@@ -166,6 +182,14 @@ export const routes = [
         path: "#/settings",
         view: () => settingsView(),
         init: () => settingsInit(),  // registra todos los listeners
+        private: true
+    },
+
+    // HASH DE EDITAR CONFIGURACIONES
+    {
+        path: "#/settings/edit",
+        view: () => settingsEditView(),
+        init: () => settingsEditInit(),
         private: true
     }
 ];
