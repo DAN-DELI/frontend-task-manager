@@ -40,6 +40,22 @@ export async function fetchTaskById(id) {
     return response.data;
 }
 
+/**
+ * Obtiene las tareas propias del usuario (donde está asignado).
+ * @returns {Promise<Array>} Lista de tareas asignadas al usuario
+ * @throws {Error} Si el servidor responde con error
+ */
+export async function fetchMyTasks() {
+    const res = await apiFetch('/api/tasks/my-tasks');
+    const response = await res.json();
+
+    if (!response.success) {
+        throw new Error(response.message || 'Error al obtener mis tareas');
+    }
+
+    return response.data;
+}
+
 // OPERACIONES POST
 
 /**
