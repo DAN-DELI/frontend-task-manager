@@ -32,3 +32,15 @@ export async function changePassword(id, passwordData) {
     });
     return res.json();
 }
+
+/**
+ * Elimina la cuenta del usuario autenticado.
+ * @param {number|string} id - ID del usuario
+ * @returns {Promise<Object>} Respuesta completa { success, message, data, errors }
+ */
+export async function deleteAccount(id) {
+    const res = await apiFetch(`/api/users/${id}`, {
+        method: 'DELETE',
+    });
+    return res.json();
+}
