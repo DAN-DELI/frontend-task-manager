@@ -1045,7 +1045,8 @@ TASKS - Vista de tareas
 
 /* ─── FIX CRÍTICO: Todas las celdas de una fila misma altura ─── */
 .data-table tbody tr {
-    height: 52px; /* Altura fija para TODA la fila */
+    height: 52px;
+    /* Altura fija para TODA la fila */
 }
 
 .data-table tbody tr td {
@@ -1938,7 +1939,8 @@ body.theme-mocha {
 
     .home-card {
         padding: 24px;
-    }    
+    }
+
     /*VISTA DE USUARIOS (USERS VIEW SPECIFIC)*/
 }
 
@@ -1981,11 +1983,13 @@ body.theme-mocha {
 .mt-16 {
     margin-top: 16px;
 }
+
 /* Contenedor flexible para los botones de la tabla */
 .table-actions {
     display: flex;
     align-items: center;
-    gap: 8px; /* Espacio uniforme entre los botones */
+    gap: 8px;
+    /* Espacio uniforme entre los botones */
 }
 
 /* ============================================
@@ -2146,7 +2150,7 @@ body.theme-mocha {
         align-items: flex-start;
         gap: 16px;
     }
-    
+
     .user-card-meta {
         width: 100%;
         justify-content: space-between;
@@ -2158,7 +2162,7 @@ body.theme-mocha {
         flex-wrap: wrap;
         gap: 16px;
     }
-    
+
     .user-meta-item {
         flex: 1;
         min-width: 100px;
@@ -2228,7 +2232,6 @@ body.theme-mocha {
     display: flex;
     flex-direction: column;
     gap: 18px;
-    max-width: 520px;
 }
 
 .form-actions {
@@ -2284,6 +2287,7 @@ body.theme-mocha {
     max-width: 100%;
 }
 
+
 /* Estilos para la sección "Asignar a" del modal de tareas */
 
 /* Fila label + botón "Seleccionar todos" */
@@ -2326,9 +2330,11 @@ body.theme-mocha {
 .users-checklist::-webkit-scrollbar {
     width: 4px;
 }
+
 .users-checklist::-webkit-scrollbar-track {
     background: transparent;
 }
+
 .users-checklist::-webkit-scrollbar-thumb {
     background: var(--bg-tertiary);
     border-radius: 4px;
@@ -2392,6 +2398,7 @@ body.theme-mocha {
     height: 14px;
     width: 14px;
 }
+
 /* Bloquea la edicion de titulo y descripcion si es aprendiz*/
 input:disabled,
 textarea:disabled {
