@@ -47,9 +47,9 @@ export const settingsView = () => {
                     <div class="input-group">
                         <label for="profile-document">Documento</label>
                         <div class="input-wrapper">
-                            <input type="text" id="profile-document" value="${user.document ?? ''}" disabled class="input-disabled" />
+                            <input type="text" id="profile-document" value="${user.document ?? ''}" placeholder="Tu número de documento" />
                         </div>
-                        <span class="input-hint">El documento no puede modificarse</span>
+                        <span class="error-message hidden" id="profile-document-error"></span>
                     </div>
 
                     <div class="settings-form-actions">
