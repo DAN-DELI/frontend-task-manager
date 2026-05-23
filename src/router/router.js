@@ -100,8 +100,12 @@ const render = async () => {
 
         const container = document.querySelector("#main-content");
 
-         // 403 - Ruta definida pero sin permisos
-        if (route.permission && !hasPermission(route.permission)) {
+        // 403 - Ruta definida pero sin permisos
+        // Soporta tanto string como función en route.permission
+        const hasAccess = typeof route.permission === 'function'
+            ? route.permission()
+            : hasPermission(route.permission);
+        if (route.permission && !hasAccess) {
             container.innerHTML = forbiddenView();
             return;
         }

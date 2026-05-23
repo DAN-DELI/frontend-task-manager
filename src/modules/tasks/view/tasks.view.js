@@ -1,4 +1,13 @@
-export const tasksView = (canAssign = false) => {
+/**
+ * Vista principal de tareas con dos secciones:
+ * - Mis Tareas (si tiene permiso tasks.view.own)
+ * - Todas las Tareas (si tiene permiso tasks.view)
+ * @param {Object} options - Opciones de la vista
+ * @param {boolean} options.canAssign - Si puede crear tareas (tasks.create)
+ * @param {boolean} options.showMyTasks - Si debe mostrar la sección de mis tareas
+ * @param {boolean} options.showAllTasks - Si debe mostrar la sección de todas las tareas
+ */
+export const tasksView = ({ canAssign = false, showMyTasks = false, showAllTasks = false } = {}) => {
     return `
     <section class="tasks-page">
 
@@ -16,19 +25,41 @@ export const tasksView = (canAssign = false) => {
             </button>
         </div>
 
-        <div class="tasks-filters" id="tasks-filters">
-            <button class="filter-btn active" data-filter="all">Todas</button>
-            <button class="filter-btn" data-filter="pendiente">Pendiente</button>
-            <button class="filter-btn" data-filter="en-progreso">En progreso</button>
-            <button class="filter-btn" data-filter="completada">Completada</button>
-        </div>
-
-        <div id="tasks-container" class="tasks-grid">
-            <div class="tasks-loading">
-                <span class="loading-spinner"></span>
-                Cargando tareas...
+        <!-- Sección: Mis Tareas -->
+        ${showMyTasks ? `
+        <div class="tasks-section" id="my-tasks-section">
+            <h2 class="section-title">Mis Tareas</h2>
+            <div class="tasks-filters" id="my-tasks-filters">
+                <button class="filter-btn active" data-filter="all" data-section="my-tasks">Todas</button>
+                <button class="filter-btn" data-filter="pendiente" data-section="my-tasks">Pendiente</button>
+                <button class="filter-btn" data-filter="en-progreso" data-section="my-tasks">En progreso</button>
+                <button class="filter-btn" data-filter="completada" data-section="my-tasks">Completada</button>
             </div>
-        </div>
+            <div id="my-tasks-container" class="tasks-grid">
+                <div class="tasks-loading">
+                    <span class="loading-spinner"></span>
+                    Cargando mis tareas...
+                </div>
+            </div>
+        </div>` : ''}
+
+        <!-- Sección: Todas las Tareas -->
+        ${showAllTasks ? `
+        <div class="tasks-section" id="all-tasks-section">
+            <h2 class="section-title">Todas las Tareas</h2>
+            <div class="tasks-filters" id="all-tasks-filters">
+                <button class="filter-btn active" data-filter="all" data-section="all-tasks">Todas</button>
+                <button class="filter-btn" data-filter="pendiente" data-section="all-tasks">Pendiente</button>
+                <button class="filter-btn" data-filter="en-progreso" data-section="all-tasks">En progreso</button>
+                <button class="filter-btn" data-filter="completada" data-section="all-tasks">Completada</button>
+            </div>
+            <div id="all-tasks-container" class="tasks-grid">
+                <div class="tasks-loading">
+                    <span class="loading-spinner"></span>
+                    Cargando todas las tareas...
+                </div>
+            </div>
+        </div>` : ''}
 
     </section>
 
@@ -112,9 +143,9 @@ export const tasksView = (canAssign = false) => {
  */
 export const taskCardHTML = (task, canUpdate = false, canDelete = false) => {
     const statusMap = {
-        'pendiente':   { cls: 'badge-pending',    label: 'Pendiente' },
+        'pendiente': { cls: 'badge-pending', label: 'Pendiente' },
         'en-progreso': { cls: 'badge-in-progress', label: 'En progreso' },
-        'completada':  { cls: 'badge-completed',   label: 'Completada' }
+        'completada': { cls: 'badge-completed', label: 'Completada' }
     };
     const { cls, label } = statusMap[task.status] ?? { cls: 'badge-pending', label: task.status };
 
@@ -181,10 +212,10 @@ export const taskCardHTML = (task, canUpdate = false, canDelete = false) => {
                         <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                     </svg>
                     ${assigned.length > 0
-                        ? (assigned.length === 1
-                            ? assigned[0].name
-                            : `${assigned[0].name} +${assigned.length - 1}`)
-                        : 'Sin asignar'}
+            ? (assigned.length === 1
+                ? assigned[0].name
+                : `${assigned[0].name} +${assigned.length - 1}`)
+            : 'Sin asignar'}
                 </span>
             </div>
         </article>
