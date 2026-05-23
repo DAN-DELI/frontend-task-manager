@@ -1264,6 +1264,10 @@ TASKS - Vista de tareas
     grid-column: 1 / -1;
 }
 
+.settings-card-account {
+    grid-column: 1 / -1;
+}
+
 .settings-card-header {
     display: flex;
     align-items: flex-start;
@@ -2217,12 +2221,6 @@ body.theme-mocha {
     margin: 0;
 }
 
-.permission-desc {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin: 0;
-}
-
 /* ---------- Formulario ---------- */
 .form-layout {
     display: flex;
@@ -2398,4 +2396,127 @@ textarea:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     color: var(--text-muted);
+}
+
+/* SETTINGS: RESUMEN DE CUENTA  */
+
+.account-summary {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    padding: 16px 20px;
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+}
+.account-avatar {
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    border-radius: 50%;
+    background-color: var(--accent);
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.account-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+}
+
+.account-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+}
+
+.account-summary-label {
+    color: var(--text-muted);
+    font-weight: 500;
+    min-width: 90px;
+    flex-shrink: 0;
+}
+
+.account-summary-value {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* SETTINGS: BOTONES DE ACCIÓN DE CUENTA */
+
+.account-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.account-actions .btn-primary,
+.account-actions .btn-danger {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    justify-content: center;
+    min-width: 140px;
+}
+
+/* SETTINGS: BOTÓN VOLVER  */
+
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--text-muted);
+    text-decoration: none;
+    margin-bottom: 8px;
+    transition: color var(--transition);
+    width: fit-content;
+}
+ 
+.btn-back:hover {
+    color: var(--text-primary);
+}
+ 
+/* SETTINGS: MODAL ELIMINAR CUENTA */
+ 
+.delete-account-body {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+ 
+.delete-account-icon {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--danger);
+}
+ 
+.delete-account-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    padding-top: 4px;
+}
+ 
+.delete-account-text strong {
+    color: var(--text-primary);
 }

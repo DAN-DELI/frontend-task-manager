@@ -14,7 +14,7 @@ import {
 import { homeView } from "../modules/home/index";
 import { hasPermission } from '../utils/auth.utils.js';
 import { rolesListView, renderRolesList, renderCreateRole, renderEditRole} from "../modules/rolesAndPermissions/index";
-import { settingsView, settingsInit } from "../modules/settings/index";
+import { settingsView, settingsInit, settingsEditView, settingsEditInit } from "../modules/settings/index";
 import { tasksView, tasksInit } from "../modules/tasks/index";
 import { renderUsersList, renderCreateUser, renderAssignRoles } from "../modules/users/index";
 
@@ -154,6 +154,14 @@ export const routes = [
         path: "#/settings",
         view: () => settingsView(),
         init: () => settingsInit(),  // registra todos los listeners
+        private: true
+    },
+
+    // HASH DE EDICIÓN DE CONFIGURACIONES
+    {
+        path: "#/settings/edit",
+        view: () => settingsEditView(),
+        init: () => settingsEditInit(),
         private: true
     }
 ];
