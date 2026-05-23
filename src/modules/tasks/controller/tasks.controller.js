@@ -475,6 +475,41 @@ const bindFilterEvents = () => {
 // ---------------------------------------------------------------
 //                       INIT PRINCIPAL
 // ---------------------------------------------------------------
+
+//                      EXPORTAR TAREAS
+
+const exportTasks = () => {
+    const filtered = activeFilter === 'all'
+        ? allTasks
+        : allTasks.filter(t => t.status === activeFilter);
+
+    if (filtered.length === 0) {
+        showToast('No hay tareas para exportar', 'error');
+        return;
+    }
+
+    const data = filtered.map(t => ({
+        id:             t.id,
+        title:          t.title,
+        description:    t.description,
+        status:         t.status,
+        created_at:     t.created_at,
+        assigned_users: (t.assigned_users ?? []).map(u => ({ id: u.id, name: u.name }))
+    }));
+
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+
+    const filterLabel = activeFilter === 'all' ? 'todas' : activeFilter;
+    a.href     = url;
+    a.download = `tareas-${filterLabel}-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    showToast(`${filtered.length} tarea(s) exportada(s)`, 'success');
+};
+
 export const tasksInit = async (params = {}) => {
 
     // Determinar qué secciones mostrar según permisos
@@ -491,15 +526,11 @@ export const tasksInit = async (params = {}) => {
         if (task) openModal(task);
     }
 
-    const btnNewTask = document.querySelector('#btn-new-task');
-    if (btnNewTask) {
-        if (!canAssign) {
-            btnNewTask.style.display = 'none';
-        } else {
-            btnNewTask.addEventListener('click', () => openModal());
-        }
-    }
+    document.querySelector('#btn-new-task')
+    ?.addEventListener('click', () => openModal());
 
+    document.querySelector('#btn-export-tasks')
+        ?.addEventListener('click', exportTasks);
     document.querySelector('#modal-close')
         ?.addEventListener('click', closeModal);
     document.querySelector('#btn-cancel')
