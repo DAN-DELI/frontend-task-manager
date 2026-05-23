@@ -330,6 +330,13 @@ export const settingsEditView = () => {
                             </button>
                         </div>
                         <span class="error-message hidden" id="new-password-error"></span>
+                        <ul class="password-requirements hidden" id="settings-password-requirements">
+                          <li id="s-req-length">✗ Mínimo 8 caracteres</li>
+                          <li id="s-req-upper">✗ Al menos una mayúscula</li>
+                          <li id="s-req-lower">✗ Al menos una minúscula</li>
+                          <li id="s-req-number">✗ Al menos un número</li>
+                          <li id="s-req-special">✗ Al menos un carácter especial (!@#$%^&*)</li>
+                        </ul>
                     </div>
 
                     <div class="input-group">

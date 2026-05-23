@@ -1,5 +1,39 @@
 import { hideContainer, showContainer } from "../../../utils/index.js";
 
+// ========================================================
+//              REQUISITOS DE SEGURIDAD
+// ========================================================
+export const PASSWORD_RULES = [
+    { id: 'req-length',  label: 'Mínimo 8 caracteres',           test: p => p.length >= 8 },
+    { id: 'req-upper',   label: 'Al menos una mayúscula',        test: p => /[A-Z]/.test(p) },
+    { id: 'req-lower',   label: 'Al menos una minúscula',        test: p => /[a-z]/.test(p) },
+    { id: 'req-number',  label: 'Al menos un número',            test: p => /[0-9]/.test(p) },
+    { id: 'req-special', label: 'Al menos un carácter especial', test: p => /[!@#$%^&*()_+\-=[\]{};':",./<>?|`~]/.test(p) },
+];
+
+export const isPasswordSecure = (password) =>
+    PASSWORD_RULES.every(rule => rule.test(password));
+
+export const updatePasswordRequirements = (password) => {
+    const list = document.querySelector('#password-requirements');
+    if (!list) return;
+
+    if (!password) {
+        list.classList.add('hidden');
+        return;
+    }
+
+    list.classList.remove('hidden');
+
+    PASSWORD_RULES.forEach(rule => {
+        const li = document.querySelector('#' + rule.id);
+        if (!li) return;
+        const passed = rule.test(password);
+        li.textContent = (passed ? '✓ ' : '✗ ') + rule.label;
+        li.classList.toggle('req-ok', passed);
+        li.classList.toggle('req-fail', !passed);
+    });
+};
 
 // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 //             VALIDAR DATOS DEL FORMULARIO
@@ -103,8 +137,8 @@ export const validateRegisterForm = () => {
         errorPassword.textContent = 'La contraseña es obligatoria';
         showContainer(errorPassword);
         isValid = false;
-    } else if (passValue.length < 8) {
-        errorPassword.textContent = 'La contraseña debe tener al menos 8 caracteres';
+    } else if (!isPasswordSecure(passValue)) {
+        errorPassword.textContent = 'La contraseña no cumple los requisitos de seguridad';
         showContainer(errorPassword);
         isValid = false;
     } else if (passValue.length > 80) {

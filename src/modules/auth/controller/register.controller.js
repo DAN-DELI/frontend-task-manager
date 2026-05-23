@@ -1,6 +1,6 @@
 import { register } from "../../../api/index.js";
 import { navigateTo, setupPasswordToggle, showToast } from "../../../utils/index.js";
-import { validatePasswordConfirmation, validateRegisterForm } from "../validation/register.validation.js";
+import { validatePasswordConfirmation, validateRegisterForm,  updatePasswordRequirements } from "../validation/register.validation.js";
 
 export const registerInit = () => {
 
@@ -21,6 +21,21 @@ export const registerInit = () => {
     // ========================================================
     setupPasswordToggle('toggle-reg-password', 'reg-password');
     setupPasswordToggle('toggle-reg-password-confirm', 'reg-password-confirm');
+
+    // ========================================================
+    //        EVENTO => VALIDACIÓN EN TIEMPO REAL PASSWORD
+    // ========================================================
+    formPassword.addEventListener('input', () => {
+        updatePasswordRequirements(formPassword.value);
+    });
+    formPassword.addEventListener('focus', () => {
+        updatePasswordRequirements(formPassword.value);
+    });
+    formPassword.addEventListener('blur', () => {
+        if (!formPassword.value) {
+            document.querySelector('#password-requirements')?.classList.add('hidden');
+        }
+    });
 
     // ========================================================
     //         MAPA DE CAMPOS => IDs DE ERROR EN EL DOM

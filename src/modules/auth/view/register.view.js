@@ -42,6 +42,14 @@ export const RegisterView = () => {
               </button>
             </div>
             <span class="error-message hidden" id="error-password"></span>
+            <span class="error-message hidden" id="error-password"></span>
+          <ul class="password-requirements hidden" id="password-requirements">
+            <li id="req-length">✗ Mínimo 8 caracteres</li>
+            <li id="req-upper">✗ Al menos una mayúscula</li>
+            <li id="req-lower">✗ Al menos una minúscula</li>
+            <li id="req-number">✗ Al menos un número</li>
+            <li id="req-special">✗ Al menos un carácter especial (!@#$%^&*)</li>
+          </ul>
           </div>
           
           <div class="input-group">
