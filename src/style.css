@@ -2609,3 +2609,17 @@ textarea:disabled {
 .btn--primary:hover {
     background: var(--accent-hover);
 }
+
+/* TASKS HEADER ACTIONS */
+
+.tasks-header-actions  {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#btn-export-tasks {
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
