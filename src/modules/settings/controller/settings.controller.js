@@ -197,10 +197,11 @@ const handlePasswordSave = async (e) => {
                     const errorId = fieldMap[err.field];
                     if (errorId) setFieldError(errorId, err.message);
                 });
-            }
-            showToast(result.message, 'error');
-            return;
-        }
+            } else {
+        showToast(result.message, 'error');
+    }
+    return;
+}
 
         // Limpiar el formulario tras éxito
         document.querySelector('#password-form').reset();

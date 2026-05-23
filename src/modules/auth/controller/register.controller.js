@@ -22,7 +22,40 @@ export const registerInit = () => {
     setupPasswordToggle('toggle-reg-password', 'reg-password');
     setupPasswordToggle('toggle-reg-password-confirm', 'reg-password-confirm');
 
+    // ========================================================
+    //         MAPA DE CAMPOS => IDs DE ERROR EN EL DOM
+    // ========================================================
+    const fieldMap = {
+        email:    'error-email',
+        document: 'error-documento',
+        name:     'error-fullname',
+    };
 
+    // ========================================================
+    //      UTILIDAD => LIMPIAR ERRORES INLINE DEL BACKEND
+    // ========================================================
+    const clearFieldErrors = () => {
+        Object.values(fieldMap).forEach(id => {
+            const el = document.querySelector(`#${id}`);
+            if (el) { el.textContent = ''; el.classList.add('hidden'); }
+        });
+    };
+
+    // ========================================================
+    //      UTILIDAD => MOSTRAR ERRORES BAJO EL CAMPO
+    // ========================================================
+    const showFieldErrors = (errors) => {
+        errors.forEach(err => {
+            const errorId = fieldMap[err.field];
+            if (!errorId) return;
+            const el = document.querySelector(`#${errorId}`);
+            if (el) {
+                el.textContent = err.message;
+                el.classList.remove('hidden');
+            }
+        });
+    };
+    
     // ========================================================
     //            EVENTO => RESTABLECER CONTRASEÑA
     // ========================================================
@@ -39,6 +72,9 @@ export const registerInit = () => {
             return;
         };
 
+        // Limpiar errores de campo previos antes de cada intento
+        clearFieldErrors();
+
         // Crear objeto con datos del formulario
         const userData = {
             name: formName.value.trim(),
@@ -50,17 +86,18 @@ export const registerInit = () => {
         const data = await register(userData);
 
         if (!data.success) {
-            const errorMessage = data.message || 'Error al registrar el usuario';
-            showToast(errorMessage, "error");
-            console.error('Error en registro:', data);
+    // Si el backend retorna errores por campo, mostrarlos inline
+            // Si no, mostrar un toast genérico con el mensaje del servidor
+            if (data.errors?.length) {
+                showFieldErrors(data.errors);
+            } else {
+                showToast(data.message || 'Error al registrar el usuario', 'error');
+            }
             return;
-        };
+        }
 
         showToast("Registro exitoso, ya puedes iniciar sesión", "success");
         form.reset();
-
-        setTimeout(() => {
-            navigateTo('/login');
-        }, 3000);
+        setTimeout(() => navigateTo('#/login'), 3000);
     });
 };
