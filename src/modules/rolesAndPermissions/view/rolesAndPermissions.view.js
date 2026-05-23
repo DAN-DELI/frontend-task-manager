@@ -68,7 +68,7 @@ export const roleCreateView = () => `
                 <div class="input-group">
                     <label for="role-name">Nombre del rol</label>
                     <div class="input-wrapper">
-                        <input type="text" id="role-name" name="name" placeholder="Ej: Supervisor" required />
+                        <input type="text" id="role-name" name="name" placeholder="Ej: Supervisor" />
                     </div>
                     <span class="error-message hidden" id="role-name-error"></span>
                 </div>
@@ -94,28 +94,29 @@ export const roleCreateView = () => `
 `;
 
 /**
- * Vista formulario — editar rol (precargado con datos del rol)
- * @param {{ id: number, name: string, description: string }} role
+ * Vista formulario — crear o editar rol
+ * @param {{ id?: number, name?: string, description?: string }} [role]
  * @param {Array} permissions - Todos los permisos del sistema
  * @param {number[]} assignedIds - IDs de permisos ya asignados al rol
+ * @param {boolean} isEditing - true = editar, false = crear
  */
-export const roleEditView = (role, permissions = [], assignedIds = []) => `
+export const roleEditView = (role, permissions = [], assignedIds = [], isEditing = true) => `
     <div class="dashboard-container">
 
         <header class="view-header">
-            <h1 class="view-title">Editar Rol</h1>
+            <h1 class="view-title">${isEditing ? 'Editar Rol' : 'Crear Rol'}</h1>
             <button id="btn-back-roles" class="btn-secondary" style="width: auto; padding: 10px 20px;">
                 Volver
             </button>
         </header>
 
         <div class="content-card">
-            <form id="edit-role-form" class="form-layout">
+            <form id="${isEditing ? 'edit-role-form' : 'create-role-form'}" class="form-layout">
 
                 <div class="input-group">
                     <label for="role-name">Nombre del rol</label>
                     <div class="input-wrapper">
-                        <input type="text" id="role-name" name="name" value="${role.name ?? ''}" placeholder="Nombre del rol" required />
+                        <input type="text" id="role-name" name="name" value="${role.name ?? ''}" placeholder="Nombre del rol" />
                     </div>
                     <span class="error-message hidden" id="role-name-error"></span>
                 </div>
@@ -129,11 +130,11 @@ export const roleEditView = (role, permissions = [], assignedIds = []) => `
                 </div>
 
                 <div class="input-group">
-                    <label>Permisos asignados</label>
+                    <label>${isEditing ? 'Permisos asignados' : 'Asignar permisos'}</label>
                     <div class="permissions-checklist" id="permissions-checklist">
                         ${permissions.length === 0
-                            ? '<p style="color: var(--text-muted); font-size: 13px;">No hay permisos disponibles.</p>'
-                            : permissions.map(p => `
+        ? '<p style="color: var(--text-muted); font-size: 13px;">No hay permisos disponibles.</p>'
+        : permissions.map(p => `
                                 <label class="permission-checkbox-item">
                                     <input
                                         type="checkbox"
@@ -148,13 +149,13 @@ export const roleEditView = (role, permissions = [], assignedIds = []) => `
                                     </div>
                                 </label>
                             `).join('')
-                        }
+    }
                     </div>
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn-primary" id="btn-save-role" style="width: auto; padding: 10px 24px;">
-                        Guardar cambios
+                    <button type="submit" class="btn-primary" id="${isEditing ? 'btn-save-role' : 'btn-create-role'}"  style="width: auto; padding: 10px 24px;">
+                        ${isEditing ? 'Editar Rol' : 'Crear Rol'}
                     </button>
                 </div>
 
