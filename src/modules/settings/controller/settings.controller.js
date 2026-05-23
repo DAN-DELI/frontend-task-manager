@@ -56,9 +56,10 @@ const initPasswordToggles = () => {
 const validateProfileForm = () => {
     const name  = document.querySelector('#profile-name').value.trim();
     const email = document.querySelector('#profile-email').value.trim();
+    const doc      = document.querySelector('#profile-document').value.trim();
     let valid = true;
 
-    clearErrors('profile-name-error', 'profile-email-error');
+    clearErrors('profile-name-error', 'profile-email-error', 'profile-document-error');
 
     if (name.length < 3) {
         setFieldError('profile-name-error', 'El nombre debe tener al menos 3 caracteres');
@@ -67,6 +68,11 @@ const validateProfileForm = () => {
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         setFieldError('profile-email-error', 'Ingresa un correo electrónico válido');
+        valid = false;
+    }
+
+    if (doc && !/^\d{5,15}$/.test(doc)) {
+        setFieldError('profile-document-error', 'El documento debe contener entre 5 y 15 dígitos');
         valid = false;
     }
 
@@ -80,10 +86,11 @@ const handleProfileSave = async (e) => {
     const user   = getCurrentUser();
     const name   = document.querySelector('#profile-name').value.trim();
     const email  = document.querySelector('#profile-email').value.trim();
+    const doc  = document.querySelector('#profile-document').value.trim();
     const btn    = document.querySelector('#btn-save-profile');
 
     // Verificar si hubo cambios reales
-    if (name === user.name && email === user.email) {
+    if (name === user.name && email === user.email && doc === String(user.document ?? '')) {
         showToast('No hay cambios para guardar', 'info');
         return;
     }
@@ -92,18 +99,33 @@ const handleProfileSave = async (e) => {
     btn.textContent = 'Guardando...';
 
     try {
-        const result = await updateProfile(user.id, { name, email });
+
+        const payload = { name, email };
+        if (doc && doc !== String(user.document ?? '')) payload.document = doc;
+        const result = await updateProfile(user.id, payload);
 
         if (!result.success) {
-            const msg = result.errors?.length
-                ? result.errors.map(e => e.message ?? e).join(', ')
-                : result.message;
-            showToast(msg, 'error');
+            if (result.errors?.length) {
+                result.errors.forEach(err => {
+                    const fieldMap = {
+                        document: 'profile-document-error',
+                        email:    'profile-email-error',
+                        name:     'profile-name-error',
+                    };
+                    const errorId = fieldMap[err.field];
+                    if (errorId) setFieldError(errorId, err.message);
+                });
+            } else {
+                showToast(result.message, 'error');  // ← solo si no hay errores de campo
+            }
             return;
         }
 
         // Actualizar datos en localStorage para reflejar los cambios
-        updateStoredUser({ name, email });
+        const updatedFields = { name, email };
+        if (payload.document) updatedFields.document = doc;
+
+        updateStoredUser(updatedFields);
         showToast(result.message, 'success');
 
     } catch (err) {
