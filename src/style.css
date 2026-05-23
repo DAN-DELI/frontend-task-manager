@@ -2588,7 +2588,7 @@ textarea:disabled {
     color: var(--text-primary);
 }
 
-.error-message {
+.error-card .error-message {
     font-size: 14px;
     color: var(--text-secondary);
     line-height: 1.65;

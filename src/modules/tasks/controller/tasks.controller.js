@@ -114,11 +114,14 @@ const updateToggleAllBtn = () => {
         : 'Seleccionar todos';
 };
 
-const bindToggleAllBtn = () => {
+    const bindToggleAllBtn = () => {
     const btn = document.querySelector('#btn-toggle-all');
     if (!btn) return;
 
-    btn.addEventListener('click', () => {
+    // Clonar el botón para eliminar listeners previos acumulados
+    const freshBtn = btn.cloneNode(true);
+    btn.replaceWith(freshBtn);
+    freshBtn.addEventListener('click', () => {
         const checkboxes = document.querySelectorAll('.checklist-checkbox');
         const allChecked = [...checkboxes].every(cb => cb.checked);
         checkboxes.forEach(cb => { cb.checked = !allChecked; });
@@ -414,7 +417,10 @@ export const tasksInit = async (params = {}) => {
     }
 
     document.querySelector('#btn-new-task')
-    ?.addEventListener('click', () => openModal());
+    ?.addEventListener('click', () => {
+    history.pushState(null, '', '#/tasks/create');
+    openModal();
+    });
 
     document.querySelector('#btn-export-tasks')
         ?.addEventListener('click', exportTasks);
