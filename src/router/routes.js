@@ -14,8 +14,8 @@ import {
 import { homeView } from "../modules/home/index";
 import { hasPermission } from '../utils/auth.utils.js';
 import { checkUserManagementAccess } from '../utils/auth.guard.js';
-import { rolesListView, renderRolesList, renderCreateRole, renderEditRole} from "../modules/rolesAndPermissions/index";
-import { settingsView, settingsInit } from "../modules/settings/index";
+import { rolesListView, renderRolesList, renderCreateRole, renderEditRole, onlyViewController } from "../modules/rolesAndPermissions/index";
+import { settingsView, settingsInit, settingsEditView, settingsEditInit } from "../modules/settings/index";
 import { tasksView, tasksInit } from "../modules/tasks/index";
 import { renderUsersList, renderCreateUser, renderAssignRoles } from "../modules/users/index";
 
@@ -69,18 +69,20 @@ export const routes = [
 
     // HASH DE TAREAS
     {
-    path: "#/tasks",
-    view: () => tasksView(hasPermission('tasks.create')),
-    init: (params) => tasksInit(params),
-    private: true
+        path: "#/tasks",
+        view: () => tasksView(hasPermission('tasks.create')),
+        init: (params) => tasksInit(params),
+        private: true,
+        permission: 'tasks.view'
     },
 
     // HASH DE EDITAR TAREA
     {
-    path: "#/tasks/:id/edit",
-    view: () => tasksView(hasPermission('tasks.create')),
-    init: (params) => tasksInit(params),
-    private: true
+        path: "#/tasks/:id/edit",
+        view: () => tasksView(hasPermission('tasks.create')),
+        init: (params) => tasksInit(params),
+        private: true,
+        permission: 'tasks.update'
     },
 
     // HASH DE USUARIOS - ACTUALIZADO
@@ -131,7 +133,7 @@ export const routes = [
         private: true
     },
 
-     // HASH CREAR ROL
+    // HASH CREAR ROL
     {
         path: "#/rolesAndPermissions/create",
         view: () => `<div id="role-create-container">Cargando formulario...</div>`,
@@ -139,6 +141,13 @@ export const routes = [
             const container = document.querySelector("#role-create-container");
             if (container) renderCreateRole(container);
         },
+        private: true
+    },
+    // HASH VISUALIZAR ROL
+    {
+        path: "#/rolesAndPermissions/view/:id",
+        view: () => `<div id="role-create-container">Cargando vista...</div>`,
+        init: (params) => onlyViewController(params),
         private: true
     },
     // HASH EDITAR ROL
