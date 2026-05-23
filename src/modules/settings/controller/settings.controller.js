@@ -2,6 +2,7 @@ import { updateProfile, changePassword,  deleteAccount } from '../../../api/sett
 import { fetchTasks } from '../../../api/tasks.api.js';
 import { showToast } from '../../../utils/index.js';
 import { navigateTo } from '../../../utils/index.js';
+import { PASSWORD_RULES, isPasswordSecure } from '../../auth/validation/register.validation.js';
 
 //                      UTILIDADES INTERNAS
 
@@ -164,9 +165,10 @@ const validatePasswordForm = () => {
         valid = false;
     }
 
-    if (newPass.length < 8) {
-        setFieldError('new-password-error', 'La nueva contraseña debe tener al menos 8 caracteres');
-        valid = false;
+    if (!newPass) {
+    setFieldError('new-password-error', 'La nueva contraseña es obligatoria');
+} else if (!isPasswordSecure(newPass)) {
+    setFieldError('new-password-error', 'La contraseña no cumple los requisitos de seguridad');
     } else if (newPass.length > 120) { 
         setFieldError('new-password-error', 'La nueva contraseña no puede exceder los 120 caracteres');
         valid = false;
@@ -426,12 +428,41 @@ export const settingsInit = () => {
 };
 
 //                  INIT DE EDICIÓN (vista #/settings/edit)
+const updateSettingsPasswordRequirements = (password) => {
+    const list = document.querySelector('#settings-password-requirements');
+    if (!list) return;
+    if (!password) { list.classList.add('hidden'); return; }
+    list.classList.remove('hidden');
+    const idMap = {
+        'req-length':  's-req-length',
+        'req-upper':   's-req-upper',
+        'req-lower':   's-req-lower',
+        'req-number':  's-req-number',
+        'req-special': 's-req-special'
+    };
+    PASSWORD_RULES.forEach(rule => {
+        const li = document.querySelector('#' + idMap[rule.id]);
+        if (!li) return;
+        const passed = rule.test(password);
+        li.textContent = (passed ? '✓ ' : '✗ ') + rule.label;
+        li.classList.toggle('req-ok', passed);
+        li.classList.toggle('req-fail', !passed);
+    });
+};
+
 export const settingsEditInit = () => {
     document.querySelector('#profile-form')
         ?.addEventListener('submit', handleProfileSave);
 
     document.querySelector('#password-form')
         ?.addEventListener('submit', handlePasswordSave);
+
+    const newPassInput = document.querySelector('#new-password');
+    newPassInput?.addEventListener('input', () => updateSettingsPasswordRequirements(newPassInput.value));
+    newPassInput?.addEventListener('focus', () => updateSettingsPasswordRequirements(newPassInput.value));
+    newPassInput?.addEventListener('blur',  () => {
+        if (!newPassInput.value) document.querySelector('#settings-password-requirements')?.classList.add('hidden');
+    });
 
     initPasswordToggles();
     initDocumentInput();

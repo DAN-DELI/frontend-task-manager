@@ -2623,3 +2623,31 @@ textarea:disabled {
     font-size: 14px;
     font-weight: 600;
 }
+
+/* ==========================================================================
+    REQUISITOS DE CONTRASEÑA
+   ========================================================================== */
+.password-requirements {
+    list-style: none;
+    padding: 0.6rem 0.8rem;
+    margin-top: 0.4rem;
+    background: var(--bg-secondary, #1e293b);
+    border: 1px solid var(--border-color, #334155);
+    border-radius: 8px;
+    font-size: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+ 
+.password-requirements li {
+    transition: color 0.2s ease;
+}
+ 
+.password-requirements .req-ok {
+    color: #22c55e;
+}
+ 
+.password-requirements .req-fail {
+    color: #ef4444;
+}
