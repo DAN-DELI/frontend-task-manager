@@ -1,5 +1,5 @@
 import Swal from 'sweetalert2';
-import { fetchTasks, createTask, updateTaskPartial, deleteTask } from '../../../api/index.js';
+import { fetchTasks, fetchMyTasks, createTask, updateTaskPartial, deleteTask } from '../../../api/index.js';
 import { fetchUsers } from '../../../api/users.api.js';
 import { showToast } from '../../../utils/index.js';
 import { hasPermission } from '../../../utils/auth.utils.js';
@@ -9,10 +9,14 @@ import { navigateTo } from '../../../utils/navigation.js';
 // ---------------------------------------------------------------
 //                          ESTADO LOCAL
 // ---------------------------------------------------------------
+let myTasks = [];
 let allTasks = [];
-let allUsers = [];  
-let activeFilter = 'all';
+let allUsers = [];
+let myTasksFilter = 'all';
+let allTasksFilter = 'all';
 let canAssign = false;
+let showMyTasksSection = false;
+let showAllTasksSection = false;
 
 // ---------------------------------------------------------------
 //                      UTILIDADES INTERNAS
@@ -42,13 +46,20 @@ const filterNonAdmins = (users) =>
 //                      RENDERIZADO
 // ---------------------------------------------------------------
 
-const renderTasks = () => {
-    const container = document.querySelector('#tasks-container');
+/**
+ * Renderiza una sección específica de tareas
+ * @param {string} section - 'my-tasks' o 'all-tasks'
+ * @param {Array} tasks - Lista de tareas a renderizar
+ * @param {string} filter - Filtro activo
+ */
+const renderTasksSection = (section, tasks, filter) => {
+    const containerId = section === 'my-tasks' ? 'my-tasks-container' : 'all-tasks-container';
+    const container = document.querySelector(`#${containerId}`);
     if (!container) return;
 
-    const filtered = activeFilter === 'all'
-        ? allTasks
-        : allTasks.filter(t => t.status === activeFilter);
+    const filtered = filter === 'all'
+        ? tasks
+        : tasks.filter(t => t.status === filter);
 
     if (filtered.length === 0) {
         container.innerHTML = `
@@ -57,7 +68,7 @@ const renderTasks = () => {
                     <path d="M9 11l3 3L22 4"></path>
                     <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
                 </svg>
-                <p>No hay tareas ${activeFilter !== 'all' ? 'con este estado' : 'registradas'}</p>
+                <p>No hay tareas ${filter !== 'all' ? 'con este estado' : 'registradas'}</p>
             </div>
         `;
         return;
@@ -66,7 +77,19 @@ const renderTasks = () => {
     const canUpdate = hasPermission('tasks.update');
     const canDelete = hasPermission('tasks.delete');
     container.innerHTML = filtered.map(t => taskCardHTML(t, canUpdate, canDelete)).join('');
-    bindCardEvents();
+    bindCardEvents(section);
+};
+
+/**
+ * Renderiza todas las secciones activas
+ */
+const renderAllTasks = () => {
+    if (showMyTasksSection) {
+        renderTasksSection('my-tasks', myTasks, myTasksFilter);
+    }
+    if (showAllTasksSection) {
+        renderTasksSection('all-tasks', allTasks, allTasksFilter);
+    }
 };
 
 // ---------------------------------------------------------------
@@ -105,9 +128,9 @@ const loadUsersChecklist = async (selectedIds = []) => {
 // ---------------------------------------------------------------
 
 const updateToggleAllBtn = () => {
-    const btn        = document.querySelector('#btn-toggle-all');
+    const btn = document.querySelector('#btn-toggle-all');
     const checkboxes = document.querySelectorAll('.checklist-checkbox');
-    const checked    = document.querySelectorAll('.checklist-checkbox:checked');
+    const checked = document.querySelectorAll('.checklist-checkbox:checked');
     if (!btn) return;
     btn.textContent = (checked.length === checkboxes.length && checkboxes.length > 0)
         ? 'Deseleccionar todos'
@@ -136,12 +159,12 @@ const updateToggleAllBtn = () => {
 //                          MODAL
 // ---------------------------------------------------------------
 
-const openModal = async(task = null) => {
-    const modal     = document.querySelector('#task-modal');
-    const title     = document.querySelector('#modal-title');
-    const idInput   = document.querySelector('#task-id');
-    const titleInp  = document.querySelector('#task-title');
-    const descInp   = document.querySelector('#task-description');
+const openModal = async (task = null) => {
+    const modal = document.querySelector('#task-modal');
+    const title = document.querySelector('#modal-title');
+    const idInput = document.querySelector('#task-id');
+    const titleInp = document.querySelector('#task-title');
+    const descInp = document.querySelector('#task-description');
     const statusSel = document.querySelector('#task-status');
 
     document.querySelector('#title-error').classList.add('hidden');
@@ -151,22 +174,22 @@ const openModal = async(task = null) => {
     const selectedIds = task?.assigned_users?.map(u => u.id) ?? [];
 
     if (task) {
-        title.textContent   = 'Editar tarea';
-        idInput.value       = task.id;
-        titleInp.value      = task.title;
-        descInp.value       = task.description;
-        statusSel.value     = task.status;
+        title.textContent = 'Editar tarea';
+        idInput.value = task.id;
+        titleInp.value = task.title;
+        descInp.value = task.description;
+        statusSel.value = task.status;
         //Si es aprendiz le bloquea el titulo y la descripcion
         titleInp.disabled = !canAssign;
-        descInp.disabled  = !canAssign;
+        descInp.disabled = !canAssign;
     } else {
         title.textContent = 'Nueva tarea';
-        idInput.value     = '';
-        titleInp.value    = '';
-        descInp.value     = '';
-        statusSel.value   = 'pendiente';
+        idInput.value = '';
+        titleInp.value = '';
+        descInp.value = '';
+        statusSel.value = 'pendiente';
         titleInp.disabled = false;
-        descInp.disabled  = false;
+        descInp.disabled = false;
     }
 
     modal.classList.remove('hidden');
@@ -184,11 +207,11 @@ const closeModal = () => {
 
 const validateForm = () => {
     const title = document.querySelector('#task-title').value.trim();
-    const desc  = document.querySelector('#task-description').value.trim();
-    let valid   = true;
+    const desc = document.querySelector('#task-description').value.trim();
+    let valid = true;
 
     const titleError = document.querySelector('#title-error');
-    const descError  = document.querySelector('#description-error');
+    const descError = document.querySelector('#description-error');
 
     if (title.length < 5) {
         titleError.textContent = 'El título debe tener al menos 5 caracteres';
@@ -217,15 +240,15 @@ const handleSave = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    const taskId  = document.querySelector('#task-id').value;
-    const title   = document.querySelector('#task-title').value.trim();
-    const desc    = document.querySelector('#task-description').value.trim();
-    const status  = document.querySelector('#task-status').value;
+    const taskId = document.querySelector('#task-id').value;
+    const title = document.querySelector('#task-title').value.trim();
+    const desc = document.querySelector('#task-description').value.trim();
+    const status = document.querySelector('#task-status').value;
     const assigned_user_ids = getSelectedUserIds();
     const btnSave = document.querySelector('#btn-save');
-    const user    = getCurrentUser();
+    const user = getCurrentUser();
 
-    btnSave.disabled    = true;
+    btnSave.disabled = true;
     btnSave.textContent = 'Guardando...';
 
     try {
@@ -252,13 +275,13 @@ const handleSave = async (e) => {
 
         showToast(result.message, 'success');
         closeModal();
-        await loadTasks();
+        await loadAllData();
 
     } catch (err) {
         console.error('[ERROR] handleSave:', err.message);
         showToast('No se pudo procesar la solicitud', 'error');
     } finally {
-        btnSave.disabled    = false;
+        btnSave.disabled = false;
         btnSave.textContent = 'Guardar';
     }
 };
@@ -288,7 +311,7 @@ const handleDelete = async (taskId) => {
         }
 
         showToast(result.message, 'success');
-        await loadTasks();
+        await loadAllData();
 
     } catch (err) {
         console.error('[ERROR] handleDelete:', err.message);
@@ -300,27 +323,59 @@ const handleDelete = async (taskId) => {
 //                      CARGA DE DATOS
 // ---------------------------------------------------------------
 
-const loadTasks = async () => {
-    const container = document.querySelector('#tasks-container');
+const loadMyTasksData = async () => {
+    const container = document.querySelector('#my-tasks-container');
     if (!container) return;
 
     container.innerHTML = `
         <div class="tasks-loading">
             <span class="loading-spinner"></span>
-            Cargando tareas...
+            Cargando mis tareas...
+        </div>
+    `;
+
+    try {
+        const result = await fetchMyTasks();
+        myTasks = Array.isArray(result) ? result : (result?.data ?? []);
+        renderTasksSection('my-tasks', myTasks, myTasksFilter);
+    } catch (err) {
+        console.error('[ERROR] loadMyTasksData:', err.message);
+
+        if (err.message?.toLowerCase().includes('sesión')) return;
+
+        container.innerHTML = `
+            <div class="tasks-empty">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <p>No se pudieron cargar mis tareas.</p>
+                <button class="btn-retry" id="btn-retry-my-tasks">Reintentar</button>
+            </div>
+        `;
+        document.querySelector('#btn-retry-my-tasks')?.addEventListener('click', loadMyTasksData);
+    }
+};
+
+const loadAllTasksData = async () => {
+    const container = document.querySelector('#all-tasks-container');
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="tasks-loading">
+            <span class="loading-spinner"></span>
+            Cargando todas las tareas...
         </div>
     `;
 
     try {
         const result = await fetchTasks();
-
-        // fetchTasks puede retornar el array directamente o un objeto con .data
         allTasks = Array.isArray(result) ? result : (result?.data ?? []);
-        renderTasks();
+        renderTasksSection('all-tasks', allTasks, allTasksFilter);
     } catch (err) {
-        console.error('[ERROR] loadTasks:', err.message);
+        console.error('[ERROR] loadAllTasksData:', err.message);
 
-        // Si fue un error de sesión, apiFetch ya redirigió. Solo limpiar el spinner.
         if (err.message?.toLowerCase().includes('sesión')) return;
 
         container.innerHTML = `
@@ -331,19 +386,34 @@ const loadTasks = async () => {
                     <line x1="12" y1="16" x2="12.01" y2="16"></line>
                 </svg>
                 <p>No se pudieron cargar las tareas.</p>
-                <button class="btn-retry" id="btn-retry">Reintentar</button>
+                <button class="btn-retry" id="btn-retry-all-tasks">Reintentar</button>
             </div>
         `;
-        document.querySelector('#btn-retry')?.addEventListener('click', loadTasks);
+        document.querySelector('#btn-retry-all-tasks')?.addEventListener('click', loadAllTasksData);
     }
+};
+
+/**
+ * Carga todos los datos según las secciones activas
+ */
+const loadAllData = async () => {
+    const promises = [];
+    if (showMyTasksSection) {
+        promises.push(loadMyTasksData());
+    }
+    if (showAllTasksSection) {
+        promises.push(loadAllTasksData());
+    }
+    await Promise.all(promises);
 };
 
 // ---------------------------------------------------------------
 //                   EVENTOS DE TARJETAS
 // ---------------------------------------------------------------
 
-const bindCardEvents = () => {
-    const container = document.querySelector('#tasks-container');
+const bindCardEvents = (section) => {
+    const containerId = section === 'my-tasks' ? 'my-tasks-container' : 'all-tasks-container';
+    const container = document.querySelector(`#${containerId}`);
     if (!container) return;
 
     // Remover listener previo clonando el nodo
@@ -351,19 +421,58 @@ const bindCardEvents = () => {
     container.replaceWith(fresh);
 
     fresh.addEventListener('click', (e) => {
-        const btnEdit   = e.target.closest('.task-btn-edit');
+        const btnEdit = e.target.closest('.task-btn-edit');
         const btnDelete = e.target.closest('.task-btn-delete');
 
         if (btnEdit) {
             const id = Number(btnEdit.dataset.id);
             history.pushState(null, '', `#/tasks/${id}/edit`);
-            const task = allTasks.find(t => t.id === id);
+            // Buscar en ambas listas
+            const task = myTasks.find(t => t.id === id) || allTasks.find(t => t.id === id);
             if (task) openModal(task);
         }
         if (btnDelete) {
             handleDelete(Number(btnDelete.dataset.id));
         }
     });
+};
+
+// ---------------------------------------------------------------
+//                   EVENTOS DE FILTROS
+// ---------------------------------------------------------------
+
+const bindFilterEvents = () => {
+    // Filtros de Mis Tareas
+    if (showMyTasksSection) {
+        const myFilters = document.querySelector('#my-tasks-filters');
+        if (myFilters) {
+            myFilters.addEventListener('click', (e) => {
+                const btn = e.target.closest('.filter-btn');
+                if (!btn) return;
+                // Remover active de todos los botones de esta sección
+                myFilters.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                myTasksFilter = btn.dataset.filter;
+                renderTasksSection('my-tasks', myTasks, myTasksFilter);
+            });
+        }
+    }
+
+    // Filtros de Todas las Tareas
+    if (showAllTasksSection) {
+        const allFilters = document.querySelector('#all-tasks-filters');
+        if (allFilters) {
+            allFilters.addEventListener('click', (e) => {
+                const btn = e.target.closest('.filter-btn');
+                if (!btn) return;
+                // Remover active de todos los botones de esta sección
+                allFilters.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                allTasksFilter = btn.dataset.filter;
+                renderTasksSection('all-tasks', allTasks, allTasksFilter);
+            });
+        }
+    }
 };
 
 // ---------------------------------------------------------------
@@ -406,13 +515,17 @@ const exportTasks = () => {
 
 export const tasksInit = async (params = {}) => {
 
+    // Determinar qué secciones mostrar según permisos
+    showMyTasksSection = hasPermission('tasks.view.own');
+    showAllTasksSection = hasPermission('tasks.view');
     canAssign = hasPermission('tasks.create');
 
-    await loadTasks();  // cargar primero para tener allTasks lleno
+    // Cargar datos de las secciones activas
+    await loadAllData();
 
     // Si viene con id en la URL, abrir directamente el modal de edición
     if (params.id) {
-        const task = allTasks.find(t => t.id === Number(params.id));
+        const task = myTasks.find(t => t.id === Number(params.id)) || allTasks.find(t => t.id === Number(params.id));
         if (task) openModal(task);
     }
 
@@ -434,13 +547,6 @@ export const tasksInit = async (params = {}) => {
     document.querySelector('#task-form')
         ?.addEventListener('submit', handleSave);
 
-    document.querySelector('#tasks-filters')
-        ?.addEventListener('click', (e) => {
-            const btn = e.target.closest('.filter-btn');
-            if (!btn) return;
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            activeFilter = btn.dataset.filter;
-            renderTasks();
-        });
+    // Bind eventos de filtros
+    bindFilterEvents();
 };

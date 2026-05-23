@@ -70,10 +70,15 @@ export const routes = [
     // HASH DE TAREAS
     {
         path: "#/tasks",
-        view: () => tasksView(hasPermission('tasks.create')),
+        view: () => tasksView({
+            canAssign: hasPermission('tasks.create'),
+            showMyTasks: hasPermission('tasks.view.own'),
+            showAllTasks: hasPermission('tasks.view')
+        }),
         init: (params) => tasksInit(params),
         private: true,
-        permission: 'tasks.view'
+        // Permitir acceso si tiene ALGUNO de los dos permisos de lectura
+        permission: (user) => hasPermission('tasks.view.own') || hasPermission('tasks.view')
     },
 
     // HASH DE CREAR TAREA
@@ -88,7 +93,11 @@ export const routes = [
     // HASH DE EDITAR TAREA
     {
         path: "#/tasks/:id/edit",
-        view: () => tasksView(hasPermission('tasks.create')),
+        view: () => tasksView({
+            canAssign: hasPermission('tasks.create'),
+            showMyTasks: hasPermission('tasks.view.own'),
+            showAllTasks: hasPermission('tasks.view')
+        }),
         init: (params) => tasksInit(params),
         private: true,
         permission: 'tasks.update'
