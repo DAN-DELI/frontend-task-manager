@@ -42,10 +42,23 @@ const renderUserRoles = (user) => {
 
     if (roles.length === 0) return '<span class="role-badge role-sin-rol">Sin rol</span>';
 
-    return roles.map(name => {
+    //  Mostrar máximo 3 roles, agregar "+n" si hay más
+    const MAX_VISIBLE = 3;
+    const visibleRoles = roles.slice(0, MAX_VISIBLE);
+    const hiddenCount = Math.max(0, roles.length - MAX_VISIBLE);
+
+    let html = visibleRoles.map(name => {
         const cssClass = `role-${name.toLowerCase().replace(/\s+/g, "-")}`;
         return `<span class="role-badge ${cssClass}">${name}</span>`;
     }).join('');
+
+    // Si hay más roles, agregar botón "..."
+    if (hiddenCount > 0) {
+        const allHiddenRoles = roles.slice(MAX_VISIBLE).join(', ');
+        html += `<span class="role-badge role-more" title="${allHiddenRoles}" style="cursor: help;">+${hiddenCount}</span>`;
+    }
+
+    return html;
 };
 
 // ─── Helper: tarjeta de usuario ───
@@ -111,6 +124,39 @@ export const renderUsersList = async (container) => {
             listContainer.innerHTML = users.map(user => userCardHTML(user)).join('');
         }
 
+                //  Implementar buscador de usuarios
+        const searchInput = document.getElementById('users-search');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase().trim();
+                const cards = document.querySelectorAll('.user-card');
+                
+                cards.forEach(card => {
+                    const name = card.querySelector('.user-name')?.textContent.toLowerCase() || '';
+                    const email = card.querySelector('.user-email')?.textContent.toLowerCase() || '';
+                    const docElement = card.querySelector('[data-id]');
+                    const doc = docElement?.getAttribute('data-document')?.toLowerCase() || '';
+                    
+                    const matches = name.includes(query) || email.includes(query) || doc.includes(query);
+                    card.style.display = matches ? '' : 'none';
+                });
+
+                // Mostrar mensaje si no hay resultados
+                const visibleCards = Array.from(cards).filter(c => c.style.display !== 'none');
+                if (visibleCards.length === 0 && query.length > 0) {
+                    if (!document.getElementById('no-results-msg')) {
+                        const noResultsMsg = document.createElement('div');
+                        noResultsMsg.id = 'no-results-msg';
+                        noResultsMsg.className = 'users-empty';
+                        noResultsMsg.innerHTML = '<p>No se encontraron usuarios</p>';
+                        listContainer.appendChild(noResultsMsg);
+                    }
+                } else {
+                    document.getElementById('no-results-msg')?.remove();
+                }
+            });
+        }
+
         // Delegación de eventos
         listContainer.addEventListener('click', async (e) => {
             const btnEdit = e.target.closest('.btn-edit');
@@ -132,7 +178,7 @@ export const renderUsersList = async (container) => {
                     try {
                         const res = await deleteUser(id);
                         if (res.success) {
-                            showToast('Usuario eliminado');
+                            showToast('Usuario eliminado', 'success');
                             renderUsersList(container); 
                         } else {
                             showAlert('error', res.message || 'Error al eliminar', 'Error');
@@ -162,6 +208,21 @@ export const renderCreateUser = async (container) => {
 
     container.innerHTML = userCreateView(roles);
 
+    // Toggle visibilidad de contraseña
+    const toggleButtons = document.querySelectorAll('.btn-toggle-password');
+    toggleButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = btn.getAttribute('data-target');
+            const input = document.getElementById(targetId);
+            if (input) {
+                const isPassword = input.type === 'password';
+                input.type = isPassword ? 'text' : 'password';
+                btn.classList.toggle('active');
+            }
+        });
+    });
+
     document.getElementById('btn-back-users')?.addEventListener('click', () => { 
         window.location.hash = '#/users'; 
     });
@@ -170,8 +231,52 @@ export const renderCreateUser = async (container) => {
     form?.addEventListener('submit', async (e) => {
         e.preventDefault();
 
+                // VALIDACIONES
+        const name = form.name.value.trim();
+        const document = form.document.value.trim();
+        const email = form.email.value.trim();
         const password = form.password.value;
         const confirmPassword = form.confirmPassword.value;
+
+        // Validar campos vacíos
+        if (!name || !document || !email || !password || !confirmPassword) {
+            showAlert('error', 'Todos los campos son requeridos', 'Validación');
+            return;
+        }
+
+        // Validar email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            showAlert('error', 'Correo electrónico inválido', 'Validación');
+            return;
+        }
+
+        // Validar longitud de contraseña
+        if (password.length < 6) {
+            showAlert('error', 'La contraseña debe tener mínimo 6 caracteres', 'Validación');
+            return;
+        }
+
+        // Validar que coincidan
+        if (password !== confirmPassword) {
+            showAlert('error', 'Las contraseñas no coinciden', 'Error de validación');
+            return;
+        }
+
+        // Validar documento
+        if (document.length < 6) {
+            showAlert('error', 'El documento debe tener mínimo 6 caracteres', 'Validación');
+            return;
+        }
+
+        // Validar nombre
+        if (name.length < 3) {
+            showAlert('error', 'El nombre debe tener mínimo 3 caracteres', 'Validación');
+            return;
+        }
+
+        // const password = form.password.value;
+        // const confirmPassword = form.confirmPassword.value;
 
         // Validar que las contraseñas coincidan
         if (password !== confirmPassword) {
@@ -185,10 +290,10 @@ export const renderCreateUser = async (container) => {
         btnSubmit.disabled = true;
 
         const userData = {
-            name: form.name.value,
-            document: form.document.value,
-            email: form.email.value,
-            password: form.password.value,
+            name: name,  //(usar variables ya validadas)
+            document: document,
+            email: email,
+            password: password,
             roleIds: getSelectedRoleIds('create')
         };
 
@@ -278,10 +383,15 @@ export const renderAssignRoles = async (container, params) => {
                 const roleIds = getSelectedRoleIds('assign');
 
                 if (roleIds.length === 0) {
-                    showAlert('warning', 'Selecciona al menos un rol', 'Validación');
-                    btnSubmit.textContent = originalText;
-                    btnSubmit.disabled = false;
-                    return;
+                    const confirmed = await showConfirmation(
+                        '¿Continuar sin roles?',
+                        'Este usuario no tendrá roles asignados en el sistema'
+                    );
+                    if (!confirmed.isConfirmed) {
+                        btnSubmit.textContent = originalText;
+                        btnSubmit.disabled = false;
+                        return;
+                    }
                 }
 
                 try {

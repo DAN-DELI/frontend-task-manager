@@ -6,6 +6,17 @@ export const usersView = () => {
                 <button id="btn-create-user" class="btn-primary">Crear Usuario</button>
             </header>
 
+            <!-- Agregar buscador de usuarios -->
+            <div class="search-container" style="margin-bottom: 20px;">
+                <input 
+                    type="text" 
+                    id="users-search" 
+                    class="search-input" 
+                    placeholder="🔍 Buscar por nombre, email o documento..."
+                    style="width: 100%; padding: 10px 15px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px;"
+                >
+            </div>
+
             <div class="users-list" id="users-list">
                 <!-- Los usuarios se inyectan aquí -->
             </div>
@@ -90,16 +101,28 @@ export const userCreateView = (roles = []) => {
                     </div>
 
                     <div class="input-group">
-                        <label for="user-password">Contraseña</label>
-                        <div class="input-wrapper">
+                        <label for="user-password">Contraseña <span style="color: red;">*</span></label>
+                        <div class="input-wrapper password-input-wrapper" style="position: relative;">
                             <input type="password" id="user-password" name="password" placeholder="Mínimo 6 caracteres" required>
+                            <button type="button" class="btn-toggle-password" data-target="user-password" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 5px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary);">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
                         </div>
                     </div>
 
                     <div class="input-group">
-                        <label for="user-confirm-password">Confirmar contraseña</label>
-                        <div class="input-wrapper">
+                        <label for="user-confirm-password">Confirmar contraseña <span style="color: red;">*</span></label>
+                        <div class="input-wrapper password-input-wrapper" style="position: relative;">
                             <input type="password" id="user-confirm-password" name="confirmPassword" placeholder="Repita la contraseña" required>
+                            <button type="button" class="btn-toggle-password" data-target="user-confirm-password" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 5px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary);">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
                         </div>
                         <span class="error-message hidden" id="error-confirm-password"></span>
                     </div>
