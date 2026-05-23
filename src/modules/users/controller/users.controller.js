@@ -63,6 +63,10 @@ const renderUserRoles = (user) => {
 
 // ─── Helper: tarjeta de usuario ───
 const userCardHTML = (user) => {
+    const user_data = JSON.parse(localStorage.getItem('user') || '{}');
+    const permissions = user_data.permissions?.map(p => p.code) || [];
+    const canUpdate = permissions.includes('users.update');
+    const canDelete = permissions.includes('users.delete');
     return `
         <div class="user-card" data-id="${user.id}">
             <div class="user-card-main">
@@ -81,7 +85,7 @@ const userCardHTML = (user) => {
                 </div>
                 <div class="user-meta-item">
                     <span class="meta-label">Documento</span>
-                    <span class="meta-value">${user.document || 'N/A'}</span>
+                    <span class="meta-value" data-document="${user.document || ''}">${user.document || 'N/A'}</span>
                 </div>
                 <div class="user-meta-item user-meta-roles">
                     <span class="meta-label">Roles</span>
@@ -89,8 +93,8 @@ const userCardHTML = (user) => {
                 </div>
             </div>
             <div class="user-card-actions">
-                <button class="btn-user-action btn-edit" data-id="${user.id}">Asignar Roles</button>
-                <button class="btn-user-action btn-delete" data-id="${user.id}">Eliminar</button>
+                <button class="btn-user-action btn-edit" data-id="${user.id}" ${!canUpdate ? 'disabled style="opacity:0.4;cursor:not-allowed;"' : ''}>Asignar Roles</button>
+                <button class="btn-user-action btn-delete" data-id="${user.id}" ${!canDelete ? 'disabled style="opacity:0.4;cursor:not-allowed;"' : ''}>Eliminar</button>
             </div>
         </div>
     `;
@@ -134,8 +138,7 @@ export const renderUsersList = async (container) => {
                 cards.forEach(card => {
                     const name = card.querySelector('.user-name')?.textContent.toLowerCase() || '';
                     const email = card.querySelector('.user-email')?.textContent.toLowerCase() || '';
-                    const docElement = card.querySelector('[data-id]');
-                    const doc = docElement?.getAttribute('data-document')?.toLowerCase() || '';
+                    const doc = card.querySelector('[data-document]')?.getAttribute('data-document')?.toLowerCase() || '';
                     
                     const matches = name.includes(query) || email.includes(query) || doc.includes(query);
                     card.style.display = matches ? '' : 'none';
@@ -272,15 +275,6 @@ export const renderCreateUser = async (container) => {
         // Validar nombre
         if (name.length < 3) {
             showAlert('error', 'El nombre debe tener mínimo 3 caracteres', 'Validación');
-            return;
-        }
-
-        // const password = form.password.value;
-        // const confirmPassword = form.confirmPassword.value;
-
-        // Validar que las contraseñas coincidan
-        if (password !== confirmPassword) {
-            showAlert('error', 'Las contraseñas no coinciden', 'Error de validación');
             return;
         }
 
