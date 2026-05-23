@@ -3,7 +3,11 @@ export const usersView = () => {
         <div class="dashboard-container">
             <header class="view-header">
                 <h1 class="view-title">Gestión de Usuarios</h1>
-                <button id="btn-create-user" class="btn-primary">Crear Usuario</button>
+                ${(() => {
+                    const u = JSON.parse(localStorage.getItem('user') || '{}');
+                    const can = u.permissions?.some(p => p.code === 'users.create');
+                    return `<button id="btn-create-user" class="btn-primary" ${!can ? 'disabled style="opacity:0.4;cursor:not-allowed;"' : ''}>Crear Usuario</button>`;
+                })()}
             </header>
 
             <!-- Agregar buscador de usuarios -->
