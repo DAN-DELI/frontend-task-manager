@@ -1,14 +1,18 @@
 import Swal from 'sweetalert2';
 import { fetchTasks, createTask, updateTaskPartial, deleteTask } from '../../../api/index.js';
+import { fetchUsers } from '../../../api/users.api.js';
 import { showToast } from '../../../utils/index.js';
 import { hasPermission } from '../../../utils/auth.utils.js';
-import { taskCardHTML } from '../view/tasks.view.js';
+import { taskCardHTML, usersChecklistHTML } from '../view/tasks.view.js';
+import { navigateTo } from '../../../utils/navigation.js';
 
 // ---------------------------------------------------------------
 //                          ESTADO LOCAL
 // ---------------------------------------------------------------
 let allTasks = [];
+let allUsers = [];  
 let activeFilter = 'all';
+let canAssign = false;
 
 // ---------------------------------------------------------------
 //                      UTILIDADES INTERNAS
@@ -21,6 +25,18 @@ const getCurrentUser = () => {
         return null;
     }
 };
+
+/** Devuelve los IDs de usuarios actualmente marcados en el checklist */
+const getSelectedUserIds = () =>
+    [...document.querySelectorAll('.checklist-checkbox:checked')]
+        .map(cb => Number(cb.value));
+
+/** Filtra usuarios que NO tienen rol 'admin' */
+const filterNonAdmins = (users) =>
+    users.filter(u =>
+        !Array.isArray(u.roles) ||
+        !u.roles.some(r => r.name?.toLowerCase() === 'admin')
+    );
 
 // ---------------------------------------------------------------
 //                      RENDERIZADO
@@ -54,10 +70,70 @@ const renderTasks = () => {
 };
 
 // ---------------------------------------------------------------
+//             CARGA Y RENDERIZADO DEL CHECKLIST
+// ---------------------------------------------------------------
+
+const loadUsersChecklist = async (selectedIds = []) => {
+    const checklist = document.querySelector('#users-checklist');
+    if (!checklist) return;
+
+    // Usar caché si ya se cargaron en esta sesión
+    if (allUsers.length === 0) {
+        checklist.innerHTML = `
+            <div class="users-checklist-loading">
+                <span class="loading-spinner loading-spinner--sm"></span>
+                Cargando usuarios...
+            </div>
+        `;
+        try {
+            const users = await fetchUsers();
+            allUsers = filterNonAdmins(users);
+        } catch (err) {
+            console.error('[ERROR] loadUsersChecklist:', err.message);
+            checklist.innerHTML = `<p class="checklist-empty">No se pudieron cargar los usuarios.</p>`;
+            return;
+        }
+    }
+
+    checklist.innerHTML = usersChecklistHTML(allUsers, selectedIds);
+    updateToggleAllBtn();
+    bindToggleAllBtn();
+};
+
+// ---------------------------------------------------------------
+//           BOTÓN "SELECCIONAR TODOS / DESELECCIONAR TODOS"
+// ---------------------------------------------------------------
+
+const updateToggleAllBtn = () => {
+    const btn        = document.querySelector('#btn-toggle-all');
+    const checkboxes = document.querySelectorAll('.checklist-checkbox');
+    const checked    = document.querySelectorAll('.checklist-checkbox:checked');
+    if (!btn) return;
+    btn.textContent = (checked.length === checkboxes.length && checkboxes.length > 0)
+        ? 'Deseleccionar todos'
+        : 'Seleccionar todos';
+};
+
+const bindToggleAllBtn = () => {
+    const btn = document.querySelector('#btn-toggle-all');
+    if (!btn) return;
+
+    btn.addEventListener('click', () => {
+        const checkboxes = document.querySelectorAll('.checklist-checkbox');
+        const allChecked = [...checkboxes].every(cb => cb.checked);
+        checkboxes.forEach(cb => { cb.checked = !allChecked; });
+        updateToggleAllBtn();
+    });
+
+    document.querySelector('#users-checklist')
+        ?.addEventListener('change', updateToggleAllBtn);
+};
+
+// ---------------------------------------------------------------
 //                          MODAL
 // ---------------------------------------------------------------
 
-const openModal = (task = null) => {
+const openModal = async(task = null) => {
     const modal     = document.querySelector('#task-modal');
     const title     = document.querySelector('#modal-title');
     const idInput   = document.querySelector('#task-id');
@@ -67,6 +143,9 @@ const openModal = (task = null) => {
 
     document.querySelector('#title-error').classList.add('hidden');
     document.querySelector('#description-error').classList.add('hidden');
+    document.querySelector('#assign-error')?.classList.add('hidden');
+
+    const selectedIds = task?.assigned_users?.map(u => u.id) ?? [];
 
     if (task) {
         title.textContent   = 'Editar tarea';
@@ -74,19 +153,26 @@ const openModal = (task = null) => {
         titleInp.value      = task.title;
         descInp.value       = task.description;
         statusSel.value     = task.status;
+        //Si es aprendiz le bloquea el titulo y la descripcion
+        titleInp.disabled = !canAssign;
+        descInp.disabled  = !canAssign;
     } else {
         title.textContent = 'Nueva tarea';
         idInput.value     = '';
         titleInp.value    = '';
         descInp.value     = '';
         statusSel.value   = 'pendiente';
+        titleInp.disabled = false;
+        descInp.disabled  = false;
     }
 
     modal.classList.remove('hidden');
+    await loadUsersChecklist(selectedIds);
 };
 
 const closeModal = () => {
     document.querySelector('#task-modal')?.classList.add('hidden');
+    history.replaceState(null, '', '#/tasks');
 };
 
 // ---------------------------------------------------------------
@@ -132,6 +218,7 @@ const handleSave = async (e) => {
     const title   = document.querySelector('#task-title').value.trim();
     const desc    = document.querySelector('#task-description').value.trim();
     const status  = document.querySelector('#task-status').value;
+    const assigned_user_ids = getSelectedUserIds();
     const btnSave = document.querySelector('#btn-save');
     const user    = getCurrentUser();
 
@@ -141,13 +228,14 @@ const handleSave = async (e) => {
     try {
         let result;
         if (taskId) {
-            result = await updateTaskPartial(taskId, { title, description: desc, status });
+            result = await updateTaskPartial(taskId, { title, description: desc, status, assigned_user_ids });
         } else {
             result = await createTask({
-                user_id: user?.id,
+                created_by: user?.id,
                 title,
                 description: desc,
-                status
+                status,
+                ...(canAssign && { assigned_user_ids })
             });
         }
 
@@ -225,7 +313,6 @@ const loadTasks = async () => {
 
         // fetchTasks puede retornar el array directamente o un objeto con .data
         allTasks = Array.isArray(result) ? result : (result?.data ?? []);
-
         renderTasks();
     } catch (err) {
         console.error('[ERROR] loadTasks:', err.message);
@@ -265,7 +352,8 @@ const bindCardEvents = () => {
         const btnDelete = e.target.closest('.task-btn-delete');
 
         if (btnEdit) {
-            const id   = Number(btnEdit.dataset.id);
+            const id = Number(btnEdit.dataset.id);
+            history.pushState(null, '', `#/tasks/${id}/edit`);
             const task = allTasks.find(t => t.id === id);
             if (task) openModal(task);
         }
@@ -278,13 +366,21 @@ const bindCardEvents = () => {
 // ---------------------------------------------------------------
 //                       INIT PRINCIPAL
 // ---------------------------------------------------------------
-export const tasksInit = () => {
+export const tasksInit = async (params = {}) => {
 
-    loadTasks();
+    canAssign = hasPermission('tasks.create');
+
+    await loadTasks();  // cargar primero para tener allTasks lleno
+
+    // Si viene con id en la URL, abrir directamente el modal de edición
+    if (params.id) {
+        const task = allTasks.find(t => t.id === Number(params.id));
+        if (task) openModal(task);
+    }
 
     const btnNewTask = document.querySelector('#btn-new-task');
     if (btnNewTask) {
-        if (!hasPermission('tasks.create')) {
+        if (!canAssign) {
             btnNewTask.style.display = 'none';
         } else {
             btnNewTask.addEventListener('click', () => openModal());

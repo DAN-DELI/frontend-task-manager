@@ -1,4 +1,4 @@
-export const tasksView = () => {
+export const tasksView = (canAssign = false) => {
     return `
     <section class="tasks-page">
 
@@ -63,6 +63,25 @@ export const tasksView = () => {
                     <span class="error-message hidden" id="description-error"></span>
                 </div>
 
+                <!--SECCIÓN: Asignar a usuarios -->
+                ${canAssign ? `
+                <div class="input-group">
+                    <div class="assign-label-row">
+                        <label>Asignar a</label>
+                        <button type="button" id="btn-toggle-all" class="btn-toggle-all">
+                            Seleccionar todos
+                        </button>
+                    </div>
+
+                    <div id="users-checklist" class="users-checklist">
+                        <div class="users-checklist-loading">
+                            <span class="loading-spinner loading-spinner--sm"></span>
+                            Cargando usuarios...
+                        </div>
+                    </div>
+                    <span class="error-message hidden" id="assign-error"></span>
+                </div>` : ''}
+
                 <div class="input-group">
                     <label for="task-status">Estado</label>
                     <div class="input-wrapper">
@@ -86,6 +105,7 @@ export const tasksView = () => {
 
 /**
  * Genera el HTML de una tarjeta de tarea.
+ * muestra los nombres de los usuarios asignados en el footer.
  * @param {Object}  task      - Datos de la tarea
  * @param {boolean} canUpdate - Si el usuario puede editar
  * @param {boolean} canDelete - Si el usuario puede eliminar
@@ -108,6 +128,12 @@ export const taskCardHTML = (task, canUpdate = false, canDelete = false) => {
             day: '2-digit', month: 'short', year: 'numeric'
         });
     };
+
+    // Nombres de usuarios asignados
+    const assigned = Array.isArray(task.assigned_users) ? task.assigned_users : [];
+    const assignedLabel = assigned.length === 0
+        ? 'Sin asignar'
+        : assigned.map(u => u.name).join(', ');
 
     return `
         <article class="task-card" data-id="${task.id}">
@@ -147,14 +173,46 @@ export const taskCardHTML = (task, canUpdate = false, canDelete = false) => {
                     </svg>
                     ${formatDate(task.created_at)}
                 </span>
-                <span class="task-card-user">
+                <span class="task-card-user" title="${assignedLabel}">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                     </svg>
-                    Usuario #${task.user_id ?? '—'}
+                    ${assigned.length > 0
+                        ? (assigned.length === 1
+                            ? assigned[0].name
+                            : `${assigned[0].name} +${assigned.length - 1}`)
+                        : 'Sin asignar'}
                 </span>
             </div>
         </article>
     `;
+};
+
+/**
+ * Genera el HTML del listado de checkboxes para asignar usuarios.
+ * @param {Array}  users           - Lista de usuarios no-admin { id, name, document }
+ * @param {Array}  selectedIds     - IDs ya seleccionados (para modo edición)
+ */
+export const usersChecklistHTML = (users, selectedIds = []) => {
+    if (users.length === 0) {
+        return `<p class="checklist-empty">No hay usuarios disponibles para asignar.</p>`;
+    }
+
+    return users.map(u => {
+        const checked = selectedIds.includes(u.id) ? 'checked' : '';
+        return `
+            <label class="checklist-item">
+                <input type="checkbox"
+                    class="checklist-checkbox"
+                    value="${u.id}"
+                    ${checked}
+                />
+                <span class="checklist-name">${u.name}</span>
+                <span class="checklist-doc">${u.document}</span>
+            </label>
+        `;
+    }).join('');
 };

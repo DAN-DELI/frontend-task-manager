@@ -2283,3 +2283,119 @@ body.theme-mocha {
 #edit-role-form.form-layout {
     max-width: 100%;
 }
+
+/* Estilos para la sección "Asignar a" del modal de tareas */
+
+/* Fila label + botón "Seleccionar todos" */
+.assign-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2px;
+}
+
+.btn-toggle-all {
+    background: none;
+    border: 1px solid var(--bg-tertiary);
+    border-radius: var(--radius-sm, 6px);
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 11px;
+    padding: 3px 10px;
+    transition: background 0.15s, color 0.15s;
+}
+
+.btn-toggle-all:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+/* Contenedor scrolleable de la lista de usuarios */
+.users-checklist {
+    background: var(--bg-primary, #0f172a);
+    border: 1px solid var(--bg-tertiary);
+    border-radius: var(--radius-sm, 6px);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-height: 180px;
+    overflow-y: auto;
+    padding: 6px;
+}
+
+.users-checklist::-webkit-scrollbar {
+    width: 4px;
+}
+.users-checklist::-webkit-scrollbar-track {
+    background: transparent;
+}
+.users-checklist::-webkit-scrollbar-thumb {
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+}
+
+/* Cada fila de usuario */
+.checklist-item {
+    align-items: center;
+    border-radius: var(--radius-sm, 6px);
+    cursor: pointer;
+    display: flex;
+    gap: 10px;
+    padding: 6px 8px;
+    transition: background 0.12s;
+    user-select: none;
+}
+
+.checklist-item:hover {
+    background: var(--bg-tertiary);
+}
+
+/* Checkbox nativo con algo de estilo */
+.checklist-checkbox {
+    accent-color: var(--accent, #6366f1);
+    cursor: pointer;
+    flex-shrink: 0;
+    height: 15px;
+    width: 15px;
+}
+
+.checklist-name {
+    color: var(--text-primary);
+    flex: 1;
+    font-size: 13px;
+}
+
+.checklist-doc {
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+/* Estado vacío / carga dentro del checklist */
+.users-checklist-loading {
+    align-items: center;
+    color: var(--text-muted);
+    display: flex;
+    font-size: 13px;
+    gap: 8px;
+    padding: 10px 4px;
+}
+
+.checklist-empty {
+    color: var(--text-muted);
+    font-size: 13px;
+    padding: 8px 4px;
+    text-align: center;
+}
+
+/* Spinner pequeño para el checklist */
+.loading-spinner--sm {
+    height: 14px;
+    width: 14px;
+}
+/* Bloquea la edicion de titulo y descripcion si es aprendiz*/
+input:disabled,
+textarea:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    color: var(--text-muted);
+}

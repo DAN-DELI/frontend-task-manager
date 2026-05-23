@@ -12,7 +12,7 @@ import {
     resetPasswordView
 } from "../modules/auth/index";
 import { homeView } from "../modules/home/index";
-
+import { hasPermission } from '../utils/auth.utils.js';
 import { rolesListView, renderRolesList, renderCreateRole, renderEditRole} from "../modules/rolesAndPermissions/index";
 import { settingsView, settingsInit } from "../modules/settings/index";
 import { tasksView, tasksInit } from "../modules/tasks/index";
@@ -68,10 +68,18 @@ export const routes = [
 
     // HASH DE TAREAS
     {
-        path: "#/tasks",
-        view: () => tasksView(),
-        init: () => tasksInit(),
-        private: true
+    path: "#/tasks",
+    view: () => tasksView(hasPermission('tasks.create')),
+    init: (params) => tasksInit(params),
+    private: true
+    },
+
+    // HASH DE EDITAR TAREA
+    {
+    path: "#/tasks/:id/edit",
+    view: () => tasksView(hasPermission('tasks.create')),
+    init: (params) => tasksInit(params),
+    private: true
     },
 
     // HASH DE USUARIOS - ACTUALIZADO
