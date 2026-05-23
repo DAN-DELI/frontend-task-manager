@@ -1,5 +1,7 @@
-import { updateProfile, changePassword } from '../../../api/settings.api.js';
+import { updateProfile, changePassword,  deleteAccount } from '../../../api/settings.api.js';
+import { fetchTasks } from '../../../api/tasks.api.js';
 import { showToast } from '../../../utils/index.js';
+import { navigateTo } from '../../../utils/index.js';
 
 //                      UTILIDADES INTERNAS
 
@@ -60,19 +62,29 @@ const validateProfileForm = () => {
     let valid = true;
 
     clearErrors('profile-name-error', 'profile-email-error', 'profile-document-error');
-
+    // Nombre: mínimo 3 caracteres y sin números
     if (name.length < 3) {
         setFieldError('profile-name-error', 'El nombre debe tener al menos 3 caracteres');
         valid = false;
+    }   else if (/\d/.test(name)) { 
+        setFieldError('profile-name-error', 'El nombre no puede contener números');
+        valid = false;
     }
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    // Correo: formato válido y máximo 100 caracteres
+    if (!email) {
+        setFieldError('profile-email-error', 'El correo electrónico es obligatorio');
+        valid = false;
+    } else if (email.length > 100) { 
+        setFieldError('profile-email-error', 'El correo no puede superar los 100 caracteres');
+        valid = false;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         setFieldError('profile-email-error', 'Ingresa un correo electrónico válido');
         valid = false;
     }
 
-    if (doc && !/^\d{5,15}$/.test(doc)) {
-        setFieldError('profile-document-error', 'El documento debe contener entre 5 y 15 dígitos');
+    if (doc && !/^\d{5,20}$/.test(doc)) {
+        setFieldError('profile-document-error', 'El documento debe contener entre 5 y 20 dígitos');
         valid = false;
     }
 
@@ -155,9 +167,12 @@ const validatePasswordForm = () => {
     if (newPass.length < 8) {
         setFieldError('new-password-error', 'La nueva contraseña debe tener al menos 8 caracteres');
         valid = false;
+    } else if (newPass.length > 120) { 
+        setFieldError('new-password-error', 'La nueva contraseña no puede exceder los 120 caracteres');
+        valid = false;
     }
 
-    if (newPass !== confirm) {
+    if (valid && newPass !== confirm) {
         setFieldError('confirm-password-error', 'Las contraseñas no coinciden');
         valid = false;
     }
@@ -196,12 +211,13 @@ const handlePasswordSave = async (e) => {
                     };
                     const errorId = fieldMap[err.field];
                     if (errorId) setFieldError(errorId, err.message);
-                });
+                    else showToast(err.message || result.message, 'error');
+                    });
             } else {
-        showToast(result.message, 'error');
-    }
-    return;
-}
+                showToast(result.message, 'error');
+            }
+            return;
+        }
 
         // Limpiar el formulario tras éxito
         document.querySelector('#password-form').reset();
@@ -213,6 +229,84 @@ const handlePasswordSave = async (e) => {
     } finally {
         btn.disabled    = false;
         btn.textContent = 'Cambiar contraseña';
+    }
+};
+
+//                  SECCIÓN: ELIMINAR CUENTA
+
+//  Abre el modal de confirmación tras verificar tareas asignadas
+const handleDeleteAccount = async () => {
+    const user = getCurrentUser();
+    if (!user) return;
+
+    const btn = document.querySelector('#btn-delete-account');
+    btn.disabled    = true;
+    btn.textContent = 'Verificando...';
+
+    try {
+        const tasks = await fetchTasks();
+        const assignedTasks = tasks.filter(task =>
+            Array.isArray(task.assigned_users)
+                ? task.assigned_users.some(u => String(u.id) === String(user.id))
+                : String(task.user_id) === String(user.id)
+        );
+
+        if (assignedTasks.length > 0) {
+            showToast(
+                `No puedes eliminar tu cuenta: tienes ${assignedTasks.length} tarea(s) asignada(s). Reasígnalas antes de continuar.`,
+                'error'
+            );
+            return;
+        }
+
+        // Mostrar modal custom en lugar de window.confirm
+        openDeleteModal();
+
+    } catch (err) {
+        console.error('[ERROR] handleDeleteAccount:', err.message);
+        showToast('Ocurrió un error al verificar tus tareas', 'error');
+    } finally {
+        if (btn) {
+            btn.disabled    = false;
+            btn.textContent = 'Eliminar cuenta';
+        }
+    }
+};
+
+// Ejecuta el DELETE tras confirmación en el modal
+const confirmDeleteAccount = async () => {
+    const user = getCurrentUser();
+    if (!user) return;
+
+    const confirmBtn = document.querySelector('#delete-account-confirm');
+    confirmBtn.disabled    = true;
+    confirmBtn.textContent = 'Eliminando...';
+
+    try {
+        const result = await deleteAccount(user.id);
+
+        if (!result.success) {
+            showToast(result.message || 'No se pudo eliminar la cuenta', 'error');
+            closeDeleteModal();
+            return;
+        }
+
+        localStorage.removeItem('user');
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        closeDeleteModal();
+        showToast('Cuenta eliminada correctamente', 'success');
+        setTimeout(() => navigateTo('#/login'), 1200);
+
+    } catch (err) {
+        console.error('[ERROR] confirmDeleteAccount:', err.message);
+        showToast('Ocurrió un error al intentar eliminar la cuenta', 'error');
+        closeDeleteModal();
+    } finally {
+        if (confirmBtn) {
+            confirmBtn.disabled    = false;
+            confirmBtn.textContent = 'Sí, eliminar cuenta';
+        }
     }
 };
 
@@ -263,9 +357,76 @@ const initThemeToggle = () => {
     });
 };
 
+//                   BLOQUEO INGRESO DE LETRAS EN DOCUMENTO
+
+const initDocumentInput = () => {
+    const docInput = document.querySelector('#profile-document');
+    if (!docInput) return;
+
+    // Permitir: backspace, delete, tab, escape, enter, flechas, home, end
+    docInput.addEventListener('keydown', (e) => {
+        const allowedKeys = ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'];
+        if (allowedKeys.includes(e.key)) return;
+        if (e.ctrlKey || e.metaKey) return;
+        // Permitir Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+        if (!/^\d$/.test(e.key)) {
+            e.preventDefault();
+        }
+    });
+
+    // Limpiar cualquier letra que llegue por paste
+    docInput.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const pasted = (e.clipboardData || window.clipboardData).getData('text');
+        const onlyDigits = pasted.replace(/\D/g, '');
+        document.execCommand('insertText', false, onlyDigits);
+    });
+};
+
+// helpers del modal — versión silenciosa (sin pushState) para uso interno
+const _closeModalSilent = () => {
+    document.querySelector('#delete-account-modal')?.classList.add('hidden');
+};
+
+// abre el modal y cambia la URL a #/settings/delete-confirm
+const openDeleteModal = () => {
+    document.querySelector('#delete-account-modal')?.classList.remove('hidden');
+    history.pushState(null, '', '#/settings/delete-confirm');
+};
+
+// cierra el modal y devuelve la URL a #/settings
+const closeDeleteModal = () => {
+    _closeModalSilent();
+    history.pushState(null, '', '#/settings');
+};
+
 //                       INIT PRINCIPAL
 
 export const settingsInit = () => {
+    document.querySelector('#btn-delete-account')
+        ?.addEventListener('click', handleDeleteAccount);
+
+        // Listeners del modal de confirmación
+    document.querySelector('#delete-account-confirm')
+        ?.addEventListener('click', confirmDeleteAccount);
+    document.querySelector('#delete-account-cancel')
+        ?.addEventListener('click', closeDeleteModal);
+    document.querySelector('#delete-account-modal-close')
+        ?.addEventListener('click', closeDeleteModal);
+    document.querySelector('#delete-account-overlay')
+        ?.addEventListener('click', closeDeleteModal);
+
+    window.addEventListener('popstate', () => {
+        if (window.location.hash !== '#/settings/delete-confirm') {
+            _closeModalSilent();
+        }
+    });
+
+    initThemeToggle();
+};
+
+//                  INIT DE EDICIÓN (vista #/settings/edit)
+export const settingsEditInit = () => {
     document.querySelector('#profile-form')
         ?.addEventListener('submit', handleProfileSave);
 
@@ -273,5 +434,5 @@ export const settingsInit = () => {
         ?.addEventListener('submit', handlePasswordSave);
 
     initPasswordToggles();
-    initThemeToggle();
+    initDocumentInput();
 };

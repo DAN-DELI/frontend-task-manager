@@ -37,6 +37,10 @@ export const validateRegisterForm = () => {
         errorName.textContent = 'El nombre no puede exceder los 100 caracteres';
         showContainer(errorName);
         isValid = false;
+    } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(nameValue)) {
+        errorName.textContent = 'El nombre solo debe contener letras';
+        showContainer(errorName);
+        isValid = false;
     } else {
         errorName.textContent = '';
         hideContainer(errorName);
@@ -79,6 +83,10 @@ export const validateRegisterForm = () => {
         isValid = false;
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
         errorEmail.textContent = 'El correo electrónico no es válido';
+        showContainer(errorEmail);
+        isValid = false;
+    } else if (emailValue.length > 100) {
+        errorEmail.textContent = 'El correo electrónico no puede exceder los 100 caracteres';
         showContainer(errorEmail);
         isValid = false;
     } else {

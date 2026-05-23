@@ -173,6 +173,5 @@ export const permissionCardHTML = (permission) => `
     <div class="permission-card">
         <span class="permission-code">${permission.code ?? ''}</span>
         <p class="permission-name">${permission.name ?? ''}</p>
-        <p class="permission-desc">${permission.description ?? ''}</p>
     </div>
 `;

@@ -14,7 +14,7 @@ import {
 import { homeView } from "../modules/home/index";
 import { hasPermission } from '../utils/auth.utils.js';
 import { rolesListView, renderRolesList, renderCreateRole, renderEditRole, onlyViewController } from "../modules/rolesAndPermissions/index";
-import { settingsView, settingsInit } from "../modules/settings/index";
+import { settingsView, settingsInit, settingsEditView, settingsEditInit } from "../modules/settings/index";
 import { tasksView, tasksInit } from "../modules/tasks/index";
 import { renderUsersList, renderCreateUser, renderAssignRoles } from "../modules/users/index";
 
@@ -71,7 +71,8 @@ export const routes = [
         path: "#/tasks",
         view: () => tasksView(hasPermission('tasks.create')),
         init: (params) => tasksInit(params),
-        private: true
+        private: true,
+        permission: 'tasks.view'
     },
 
     // HASH DE EDITAR TAREA
@@ -79,7 +80,8 @@ export const routes = [
         path: "#/tasks/:id/edit",
         view: () => tasksView(hasPermission('tasks.create')),
         init: (params) => tasksInit(params),
-        private: true
+        private: true,
+        permission: 'tasks.update'
     },
 
     // HASH DE USUARIOS - ACTUALIZADO
@@ -94,7 +96,8 @@ export const routes = [
                 renderUsersList(container);
             }
         },
-        private: true
+        private: true,
+        permission: 'users.view'
     },
     // HASH DE CREACIÓN DE USUARIOS
     {
@@ -104,7 +107,8 @@ export const routes = [
             const container = document.querySelector("#user-create-container");
             if (container) renderCreateUser(container);
         },
-        private: true
+        private: true,
+        permission: 'users.create'
     },
     // --- HASH DE ASIGNACIÓN DE ROLES ---
     {
@@ -114,7 +118,8 @@ export const routes = [
             const container = document.querySelector("#user-assign-roles-container");
             if (container && params) renderAssignRoles(container, params);
         },
-        private: true
+        private: true,
+        permission: 'user-roles.assign'
     },
 
     // HASH DE ROLES Y PERMISOS
@@ -125,7 +130,8 @@ export const routes = [
             const container = document.querySelector("#roles-view-container");
             if (container) renderRolesList(container);
         },
-        private: true
+        private: true,
+        permission: 'roles.view'
     },
 
     // HASH CREAR ROL
@@ -136,7 +142,8 @@ export const routes = [
             const container = document.querySelector("#role-create-container");
             if (container) renderCreateRole(container);
         },
-        private: true
+        private: true,
+        permission: 'roles.create'
     },
     // HASH VISUALIZAR ROL
     {
@@ -153,7 +160,8 @@ export const routes = [
             const container = document.querySelector("#role-edit-container");
             if (container && params) renderEditRole(container, params);
         },
-        private: true
+        private: true,
+        permission: 'roles.update'
     },
 
     // HASH DE CONFIGURACIONES
@@ -161,6 +169,14 @@ export const routes = [
         path: "#/settings",
         view: () => settingsView(),
         init: () => settingsInit(),  // registra todos los listeners
+        private: true
+    },
+
+    // HASH DE EDICIÓN DE CONFIGURACIONES
+    {
+        path: "#/settings/edit",
+        view: () => settingsEditView(),
+        init: () => settingsEditInit(),
         private: true
     }
 ];

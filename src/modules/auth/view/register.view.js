@@ -27,7 +27,7 @@ export const RegisterView = () => {
           <div class="input-group">
             <label for="email">Correo Electrónico</label>
             <div class="input-wrapper">
-              <input type="email" id="email" name="email" placeholder="correo@escuela.com">
+              <input id="email" name="email" placeholder="correo@escuela.com">
             </div>
             <span class="error-message hidden" id="error-email"></span>
           </div>

@@ -2,7 +2,10 @@ import { generateNavItems } from "../layout/index.js";
 import { headerLayout } from "../layout/index.js";
 import { headerInit } from "../layout/index.js";
 import { navigateTo } from "../utils/index.js";
+import { hasPermission } from "../utils/auth.utils.js";
 import { routes } from "./routes.js";
+import { notFoundView } from "../modules/errors/index.js";
+import { forbiddenView } from "../modules/errors/index.js";
 
 // ========================================================
 //   MONTAR LAYOUT SI NO EXISTE (solo rutas privadas)
@@ -71,16 +74,20 @@ const render = async () => {
     const path = window.location.hash || "#/login";
     const { route, params } = findRoute(path);
 
-    // 404
+
+    // 404 - Ruta no definida
     if (!route) {
-        const container = document.querySelector("#app");
-        container.innerHTML = `
-            <section class="home-section">
-                <h2>404</h2>
-                <p>Ruta no encontrada.</p>
-                <a href="#/home" class="btn">Volver al inicio</a>
-            </section>
-        `;
+        // Si hay sesión activa, mostrar el 404 dentro del layout
+        if (localStorage.getItem('user')) {
+            const ready = ensureLayout();
+            if (!ready) return;
+            const container = document.querySelector("#main-content");
+            container.innerHTML = notFoundView();
+        } else {
+            // Sin sesión: limpiar y mostrar el 404 sin layout
+            const container = document.querySelector("#app");
+            container.innerHTML = notFoundView();
+        }
         return;
     }
 
@@ -92,6 +99,12 @@ const render = async () => {
         if (!ready) return; // Fue redirigido a login
 
         const container = document.querySelector("#main-content");
+
+         // 403 - Ruta definida pero sin permisos
+        if (route.permission && !hasPermission(route.permission)) {
+            container.innerHTML = forbiddenView();
+            return;
+        }
 
         // Soporte para vistas sync y async
         const viewResult = route.view();

@@ -22,6 +22,11 @@ export const validateForgotPasswordForm = () => {
         showContainer(errorEmail);
         isValid = false;
 
+    } else if (emailValue.length > 100) {
+        errorEmail.textContent = 'El correo electrónico no puede exceder los 100 caracteres';
+        showContainer(errorEmail);
+        isValid = false;
+
     } else {
         errorEmail.textContent = '';
         hideContainer(errorEmail);
