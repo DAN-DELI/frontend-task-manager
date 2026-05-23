@@ -2402,13 +2402,34 @@ textarea:disabled {
 
 .account-summary {
     display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 24px;
-    padding: 16px;
-    background: var(--bg-secondary, rgba(255,255,255,0.04));
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+    padding: 16px 20px;
+    background: var(--bg-tertiary);
     border-radius: 8px;
-    border: 1px solid var(--border-color, rgba(255,255,255,0.08));
+}
+.account-avatar {
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    border-radius: 50%;
+    background-color: var(--accent);
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.account-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
 }
 
 .account-summary-row {
@@ -2423,12 +2444,12 @@ textarea:disabled {
     color: var(--text-muted);
     font-weight: 500;
     min-width: 90px;
+    flex-shrink: 0;
 }
 
 .account-summary-value {
     color: var(--text-primary);
-    text-align: right;
-    word-break: break-all;
+    font-weight: 600;
 }
 
 /* SETTINGS: BOTONES DE ACCIÓN DE CUENTA */

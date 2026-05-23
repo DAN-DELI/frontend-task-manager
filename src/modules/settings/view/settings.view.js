@@ -30,17 +30,20 @@ export const settingsView = () => {
                 </div>
 
                 <div class="account-summary">
-                    <div class="account-summary-row">
-                        <span class="account-summary-label">Nombre</span>
-                        <span class="account-summary-value" id="summary-name">${user.name ?? '—'}</span>
-                    </div>
-                    <div class="account-summary-row">
-                        <span class="account-summary-label">Correo</span>
-                        <span class="account-summary-value" id="summary-email">${user.email ?? '—'}</span>
-                    </div>
-                    <div class="account-summary-row">
-                        <span class="account-summary-label">Documento</span>
-                        <span class="account-summary-value" id="summary-document">${user.document ?? '—'}</span>
+                    <div class="account-avatar">${(user.name ?? 'U').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}</div>
+                    <div class="account-info">
+                        <div class="account-summary-row">
+                            <span class="account-summary-label">Nombre</span>
+                            <span class="account-summary-value" id="summary-name">${user.name ?? '—'}</span>
+                        </div>
+                        <div class="account-summary-row">
+                            <span class="account-summary-label">Correo</span>
+                            <span class="account-summary-value" id="summary-email">${user.email ?? '—'}</span>
+                        </div>
+                        <div class="account-summary-row">
+                            <span class="account-summary-label">Documento</span>
+                            <span class="account-summary-value" id="summary-document">${user.document ?? '—'}</span>
+                        </div>
                     </div>
                 </div>
 
@@ -238,7 +241,7 @@ export const settingsEditView = () => {
         <div class="settings-grid">
 
             <!-- CARD: EDITAR PERFIL -->
-            <div class="settings-card settings-card-account">
+            <div class="settings-card">
                 <div class="settings-card-header">
                     <div class="settings-card-icon">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
