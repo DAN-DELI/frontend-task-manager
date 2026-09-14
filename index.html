@@ -1,47 +1,16 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acceso - Gestor de Tareas</title>
-    <link rel="stylesheet" href="src/styles.css">
-    <link rel="stylesheet" href="src/index.css">
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>task-manager</title>
 </head>
 
 <body>
-    <div id="login-wrapper" class="login-wrapper">
-        <section class="validation-section--no-margin">
-            <div class="card card--login">
-
-                <header class="login-header">
-                    <h1 class="login-title">Administrador de Tareas</h1>
-                    <p class="card__subtitle">Identifícate para acceder a tu espacio de trabajo</p>
-                </header>
-
-                <main class="form-content">
-                    <form id="login-form" class="form-content">
-                        <div class="form__group">
-                            <label for="documento" class="form__label">Documento de identidad</label>
-                            <input type="text" id="documento" class="form__input"
-                                placeholder="Ingresa tu número de documento" autocomplete="off" required>
-                        </div>
-
-                        <div class="login-footer">
-                            <button type="submit" id="validateBtn" class="btn btn--primary btn--full"> Continuar
-                            </button>
-                        </div>
-                    </form>
-                </main>
-            </div>
-        </section>
-    </div>
-
-    <!-- AREA DE NOTIFICACIONES ENTRANTES -->
-    <div id="notification-container" class="notification-container"></div>
-
-    <!-- ENLAZAR EL CODIGO -->
-    <script src="/src/index.js" type="module"></script>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
 </body>
 
 </html>
